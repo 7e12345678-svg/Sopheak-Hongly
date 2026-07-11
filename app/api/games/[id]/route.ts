@@ -6,16 +6,16 @@ import { requireAdmin } from "@/lib/auth";
 
 // ================= PUT =================
 export async function PUT(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  request: Request,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin();
     await connectDB();
 
-    const { id } = await params;
+    const { id } = await context.params;
 
-    const formData = await req.formData();
+    const formData = await request.formData();
 
     const name = formData.get("name") as string;
     const slug = formData.get("slug") as string;
@@ -38,9 +38,7 @@ export async function PUT(
       const result: any = await new Promise((resolve, reject) => {
         cloudinary.uploader
           .upload_stream(
-            {
-              folder: "games",
-            },
+            { folder: "games" },
             (error, result) => {
               if (error) reject(error);
               else resolve(result);
@@ -52,19 +50,14 @@ export async function PUT(
       updateData.image = result.secure_url;
     }
 
-    const game = await Game.findByIdAndUpdate(
-      id,
-      updateData,
-      {
-        new: true,
-      }
-    );
+    const game = await Game.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
 
     return NextResponse.json({
       success: true,
       game,
     });
-
   } catch (error) {
     console.error(error);
 
@@ -82,21 +75,20 @@ export async function PUT(
 
 // ================= DELETE =================
 export async function DELETE(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  request: Request,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin();
     await connectDB();
 
-    const { id } = await params;
+    const { id } = await context.params;
 
     await Game.findByIdAndDelete(id);
 
     return NextResponse.json({
       success: true,
     });
-
   } catch (error) {
     console.error(error);
 

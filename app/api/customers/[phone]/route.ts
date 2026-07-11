@@ -3,13 +3,13 @@ import connectDB from "@/lib/mongodb";
 import Order from "@/models/Order";
 
 export async function GET(
-  req: Request,
-  { params }: { params: Promise<{ phone: string }> }
+  request: Request,
+  context: { params: Promise<{ phone: string }> }
 ) {
   try {
     await connectDB();
 
-    const { phone } = await params;
+    const { phone } = await context.params;
 
     const orders = await Order.find({ phone }).sort({
       createdAt: -1,

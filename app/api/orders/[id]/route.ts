@@ -5,17 +5,15 @@ import { requireAdmin } from "@/lib/auth";
 
 // ================= PUT =================
 export async function PUT(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  request: Request,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin();
-
     await connectDB();
 
-    const { id } = await params;
-
-    const { status } = await req.json();
+    const { id } = await context.params;
+    const { status } = await request.json();
 
     const order = await Order.findByIdAndUpdate(
       id,
@@ -27,8 +25,9 @@ export async function PUT(
       success: true,
       order,
     });
+  } catch (error) {
+    console.error(error);
 
-  } catch {
     return NextResponse.json(
       {
         success: false,
@@ -43,23 +42,23 @@ export async function PUT(
 
 // ================= DELETE =================
 export async function DELETE(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  request: Request,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin();
-
     await connectDB();
 
-    const { id } = await params;
+    const { id } = await context.params;
 
     await Order.findByIdAndDelete(id);
 
     return NextResponse.json({
       success: true,
     });
+  } catch (error) {
+    console.error(error);
 
-  } catch {
     return NextResponse.json(
       {
         success: false,

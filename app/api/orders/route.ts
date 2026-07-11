@@ -138,34 +138,3 @@ export async function PATCH(req: Request) {
     );
   }
 }
-
-// ================= DELETE =================
-export async function DELETE(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    await requireAdmin();
-
-    await connectDB();
-
-    const { id } = await params;
-
-    await Order.findByIdAndDelete(id);
-
-    return NextResponse.json({
-      success: true,
-    });
-
-  } catch (err) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Unauthorized",
-      },
-      {
-        status: 401,
-      }
-    );
-  }
-}
