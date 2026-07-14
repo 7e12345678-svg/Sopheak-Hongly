@@ -1,6 +1,7 @@
 "use client";
 
-import GameRow, { Game } from "./GameRow";
+import GameRow from "./GameRow";
+import type { Game } from "@/types";
 
 interface Props {
   games: Game[];

@@ -186,7 +186,7 @@ if (data.success) {
   <main className="min-h-screen bg-slate-950 text-white py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
     <div className="max-w-3xl mx-auto bg-slate-900 rounded-2xl p-4 sm:p-5 sm:p-8 shadow-2xl border border-slate-800">
 
-      {/* Game Image */}
+      
      {/* Game Image */}
 <div className="flex justify-center mb-8">
   <Image

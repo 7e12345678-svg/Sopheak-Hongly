@@ -1,3 +1,4 @@
+import type { Analytics } from "@/types";
 interface Props {
   title: string;
   value: number;

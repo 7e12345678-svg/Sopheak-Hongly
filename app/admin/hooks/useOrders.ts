@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 
 export interface Order {
   _id: string;
-
   game: string;
   gameId: string;
 
@@ -28,21 +27,30 @@ export default function useOrders() {
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const [orders, setOrders] = useState<Order[]>([]);
-
   const [selectedOrder, setSelectedOrder] =
     useState<Order | null>(null);
 
+  // =============================
+  // Fetch Orders
+  // =============================
   const fetchOrders = async () => {
     try {
-      const res = await fetch("/api/orders");
+      const res = await fetch("/api/orders", {
+        cache: "no-store",
+      });
+
+      if (!res.ok) {
+        console.error(await res.text());
+        return;
+      }
 
       const data = await res.json();
 
       if (data.success) {
-        setOrders(data.orders || []);
+        setOrders(data.orders);
       }
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -50,10 +58,19 @@ export default function useOrders() {
     fetchOrders();
   }, []);
 
+  // =============================
+  // Confirm Order
+  // =============================
   const updateStatus = async (id: string) => {
     try {
       const res = await fetch(`/api/orders/${id}`, {
         method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: "Completed",
+        }),
       });
 
       const data = await res.json();
@@ -65,11 +82,14 @@ export default function useOrders() {
           setSelectedOrder(data.order);
         }
       }
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
     }
   };
 
+  // =============================
+  // Delete Order
+  // =============================
   const deleteOrder = async (id: string) => {
     if (!confirm("Delete this order?")) return;
 
@@ -87,8 +107,8 @@ export default function useOrders() {
           setSelectedOrder(null);
         }
       }
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -103,6 +123,7 @@ export default function useOrders() {
     fetchOrders,
 
     updateStatus,
+
     deleteOrder,
   };
 }

@@ -3,11 +3,20 @@ import connectDB from "@/lib/mongodb";
 import Order from "@/models/Order";
 import Game from "@/models/Game";
 
+interface AnalyticsOrder {
+  phone: string;
+  status: string;
+  payment: string;
+  game: string;
+  price?: number;
+  createdAt: Date | string;
+}
+
 export async function GET() {
   try {
     await connectDB();
 
-    const orders = await Order.find();
+    const orders = (await Order.find()) as AnalyticsOrder[];
     const games = await Game.find();
 
     // ===========================
@@ -17,31 +26,31 @@ export async function GET() {
     const totalOrders = orders.length;
 
     const completedOrders = orders.filter(
-      (o: any) => o.status === "Completed"
+      (order) => order.status === "Completed"
     ).length;
 
     const pendingOrders = orders.filter(
-      (o: any) => o.status === "Pending"
+      (order) => order.status === "Pending"
     ).length;
 
     const totalGames = games.length;
 
     // ===========================
-// Customers
-// ===========================
+    // Customers
+    // ===========================
 
-const uniqueCustomers = new Set(
-  orders.map((o: any) => o.phone)
-);
+    const uniqueCustomers = new Set(
+      orders.map((order) => order.phone)
+    );
 
-const totalCustomers = uniqueCustomers.size;
+    const totalCustomers = uniqueCustomers.size;
 
     // ===========================
     // Revenue
     // ===========================
 
     const revenue = orders.reduce(
-      (sum: number, order: any) => sum + Number(order.price || 0),
+      (sum, order) => sum + Number(order.price ?? 0),
       0
     );
 
@@ -56,15 +65,12 @@ const totalCustomers = uniqueCustomers.size;
       TrueMoney: 0,
     };
 
-    orders.forEach((order: any) => {
-      if (
-        paymentMethods[
-          order.payment as keyof typeof paymentMethods
-        ] !== undefined
-      ) {
-        paymentMethods[
-          order.payment as keyof typeof paymentMethods
-        ]++;
+    orders.forEach((order) => {
+      const method =
+        order.payment as keyof typeof paymentMethods;
+
+      if (method in paymentMethods) {
+        paymentMethods[method]++;
       }
     });
 
@@ -74,8 +80,9 @@ const totalCustomers = uniqueCustomers.size;
 
     const gameMap: Record<string, number> = {};
 
-    orders.forEach((order: any) => {
-      gameMap[order.game] = (gameMap[order.game] || 0) + 1;
+    orders.forEach((order) => {
+      gameMap[order.game] =
+        (gameMap[order.game] || 0) + 1;
     });
 
     const topGames = Object.entries(gameMap)
@@ -104,24 +111,30 @@ const totalCustomers = uniqueCustomers.size;
       "Dec",
     ];
 
-    
+    const monthlyRevenue = monthNames.map(
+      (month) => ({
+        month,
+        revenue: 0,
+      })
+    );
 
-    const monthlyRevenue = monthNames.map((month) => ({
-      month,
-      revenue: 0,
-    }));
+    const monthlyOrders = monthNames.map(
+      (month) => ({
+        month,
+        orders: 0,
+      })
+    );
 
-    const monthlyOrders = monthNames.map((month) => ({
-      month,
-      orders: 0,
-    }));
+    orders.forEach((order) => {
+      const month = new Date(
+        order.createdAt
+      ).getMonth();
 
-    orders.forEach((order: any) => {
-      const month = new Date(order.createdAt).getMonth();
+      monthlyRevenue[month].revenue += Number(
+        order.price ?? 0
+      );
 
-      monthlyRevenue[month].revenue += Number(order.price || 0);
-
-      monthlyOrders[month].orders += 1;
+      monthlyOrders[month].orders++;
     });
 
     return NextResponse.json({
@@ -137,11 +150,8 @@ const totalCustomers = uniqueCustomers.size;
       },
 
       paymentMethods,
-
       topGames,
-
       monthlyRevenue,
-
       monthlyOrders,
     });
   } catch (error) {

@@ -1,6 +1,30 @@
-import mongoose, { Schema } from "mongoose";
 
-const PackageSchema = new Schema(
+import mongoose, {
+  Schema,
+  model,
+  models,
+  Document,
+} from "mongoose";
+
+export interface IGamePackage {
+  name: string;
+  price: number;
+}
+
+export interface IGame extends Document {
+  name: string;
+  slug: string;
+  image: string;
+  description: string;
+  packages: IGamePackage[];
+  featured: boolean;
+  sortOrder: number;
+  status: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const PackageSchema = new Schema<IGamePackage>(
   {
     name: {
       type: String,
@@ -17,7 +41,7 @@ const PackageSchema = new Schema(
   }
 );
 
-const GameSchema = new Schema(
+const GameSchema = new Schema<IGame>(
   {
     name: {
       type: String,
@@ -68,5 +92,5 @@ const GameSchema = new Schema(
   }
 );
 
-export default mongoose.models.Game ||
-  mongoose.model("Game", GameSchema);
+export default (models.Game as mongoose.Model<IGame>) ||
+  model<IGame>("Game", GameSchema);

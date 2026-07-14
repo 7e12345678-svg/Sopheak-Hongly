@@ -10,26 +10,24 @@ import {
   Tooltip,
 } from "recharts";
 
+import type { Analytics } from "@/types";
+
 interface OrdersChartProps {
-  analytics: any;
+  analytics: Analytics;
 }
 
 export default function OrdersChart({
   analytics,
 }: OrdersChartProps) {
   return (
-    <div className="bg-[#111827] rounded-2xl border border-slate-700 p-6 shadow-xl">
-
-      <h2 className="text-2xl font-bold text-cyan-400 mb-6">
+    <div className="rounded-2xl border border-slate-700 bg-[#111827] p-6 shadow-xl">
+      <h2 className="mb-6 text-2xl font-bold text-cyan-400">
         Orders Overview
       </h2>
 
       <div className="h-[380px]">
-
         <ResponsiveContainer width="100%" height="100%">
-
           <BarChart data={analytics.monthlyOrders}>
-
             <CartesianGrid
               stroke="#334155"
               strokeDasharray="3 3"
@@ -51,13 +49,9 @@ export default function OrdersChart({
               fill="#06b6d4"
               radius={[8, 8, 0, 0]}
             />
-
           </BarChart>
-
         </ResponsiveContainer>
-
       </div>
-
     </div>
   );
 }

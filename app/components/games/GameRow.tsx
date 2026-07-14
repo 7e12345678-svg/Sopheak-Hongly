@@ -1,20 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import type { Game } from "@/types"; // ឬ "@/types/Game" បើ Game.ts នៅទីនោះ
+
 import GameStatus from "./GameStatus";
 import GameActions from "./GameActions";
-
-export interface Game {
-  _id: string;
-  name: string;
-  slug: string;
-  image: string;
-  description: string;
-  featured: boolean;
-  sortOrder: number;
-  status: boolean;
-  createdAt: string;
-}
 
 interface Props {
   game: Game;
@@ -37,7 +27,6 @@ export default function GameRow({
 }: Props) {
   return (
     <tr className="border-b border-slate-800 hover:bg-slate-800/40 transition">
-
       {/* Logo */}
       <td className="px-6 py-4">
         <Image
@@ -77,33 +66,30 @@ export default function GameRow({
 
       {/* Actions */}
       <td className="px-6 py-4">
-  <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-2">
+          <button
+            onClick={() =>
+              onToggleFeatured(
+                game._id,
+                game.featured
+              )
+            }
+            className={`h-10 w-10 rounded-lg transition ${
+              game.featured
+                ? "bg-yellow-500 text-black"
+                : "bg-slate-700 text-slate-300 hover:bg-yellow-500 hover:text-black"
+            }`}
+            title="Featured"
+          >
+            ⭐
+          </button>
 
-    <button
-      onClick={() =>
-        onToggleFeatured(
-          game._id,
-          game.featured
-        )
-      }
-      className={`h-10 w-10 rounded-lg transition ${
-        game.featured
-          ? "bg-yellow-500 text-black"
-          : "bg-slate-700 text-slate-300 hover:bg-yellow-500 hover:text-black"
-      }`}
-      title="Featured"
-    >
-      ⭐
-    </button>
-
-    <GameActions
-      onEdit={() => onEdit(game)}
-      onDelete={() => onDelete(game._id)}
-    />
-
-  </div>
-</td>
-
+          <GameActions
+            onEdit={() => onEdit(game)}
+            onDelete={() => onDelete(game._id)}
+          />
+        </div>
+      </td>
     </tr>
   );
 }

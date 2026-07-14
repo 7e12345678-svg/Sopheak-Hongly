@@ -1,5 +1,7 @@
 "use client";
 
+import type { Analytics } from "@/types";
+
 import {
   ResponsiveContainer,
   LineChart,

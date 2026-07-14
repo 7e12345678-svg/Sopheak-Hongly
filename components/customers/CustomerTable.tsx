@@ -1,13 +1,6 @@
 "use client";
 
-interface Customer {
-  phone: string;
-  playerName: string;
-  totalOrders: number;
-  totalSpent: number;
-  favoriteGame: string;
-  lastOrder: string;
-}
+import type { Customer } from "@/types";
 
 interface Props {
   customers: Customer[];
@@ -20,9 +13,7 @@ export default function CustomerTable({
 }: Props) {
   return (
     <div className="overflow-x-auto rounded-2xl border border-slate-700 bg-[#111827]">
-
       <table className="w-full">
-
         <thead className="bg-[#0f172a]">
           <tr>
             <th className="p-4 text-left">Player</th>
@@ -36,14 +27,11 @@ export default function CustomerTable({
         </thead>
 
         <tbody>
-
           {customers.map((customer) => (
-
             <tr
               key={customer.phone}
-              className="border-t border-slate-700 hover:bg-slate-800 transition"
+              className="border-t border-slate-700 transition hover:bg-slate-800"
             >
-
               <td className="p-4">
                 {customer.playerName}
               </td>
@@ -56,7 +44,7 @@ export default function CustomerTable({
                 {customer.totalOrders}
               </td>
 
-              <td className="text-center text-green-400 font-bold">
+              <td className="text-center font-bold text-green-400">
                 ${customer.totalSpent}
               </td>
 
@@ -69,24 +57,28 @@ export default function CustomerTable({
               </td>
 
               <td className="text-center">
-
                 <button
                   onClick={() => onView(customer)}
-                  className="bg-cyan-500 hover:bg-cyan-600 px-4 py-2 rounded-lg text-sm font-semibold"
+                  className="rounded-lg bg-cyan-500 px-4 py-2 text-sm font-semibold transition hover:bg-cyan-600"
                 >
                   View
                 </button>
-
               </td>
-
             </tr>
-
           ))}
 
+          {customers.length === 0 && (
+            <tr>
+              <td
+                colSpan={7}
+                className="py-10 text-center text-gray-500"
+              >
+                No customers found.
+              </td>
+            </tr>
+          )}
         </tbody>
-
       </table>
-
     </div>
   );
 }

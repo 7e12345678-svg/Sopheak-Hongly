@@ -16,6 +16,8 @@ import TopCustomerCard from "./components/TopCustomerCard";
 import ChartsSection from "./components/ChartsSection";
 import OrdersTable from "./components/OrdersTable";
 import OrderModal from "./components/OrderModal";
+import LiveActivity from "./components/LiveActivity";
+import Link from "next/link";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -156,6 +158,32 @@ export default function AdminPage() {
           onDelete={deleteOrder}
           onZoom={() => {}}
         />
+
+        <Link
+  href="/admin"
+  className="
+    fixed
+    bottom-6
+    right-6
+    z-[9999]
+    flex
+    items-center
+    gap-2
+    rounded-full
+    bg-cyan-500
+    px-5
+    py-3
+    font-bold
+    text-black
+    shadow-lg
+    shadow-cyan-500/40
+    transition
+    hover:scale-105
+    hover:bg-cyan-400
+  "
+>
+  ⚙️ Admin
+</Link>
 
       </main>
     </>

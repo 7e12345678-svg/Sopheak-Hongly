@@ -4,7 +4,7 @@ interface Props {
 }
 
 const gameImages: Record<string, string> = {
-  "Mobile Legends": "/images/mlbb.jpg",
+  "Mobile Legend": "/images/mlbb.jpg",
   "PUBG Mobile": "/images/pubg.jpg",
   "Free Fire": "/images/freefire.jpg",
   Roblox: "/images/roblox.jpg",

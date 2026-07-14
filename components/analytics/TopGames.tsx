@@ -1,55 +1,44 @@
 "use client";
 
+import type { Analytics } from "@/types";
+
 interface TopGamesProps {
-  analytics: any;
+  analytics: Analytics;
 }
 
 export default function TopGames({
   analytics,
 }: TopGamesProps) {
-
   const games = analytics.topGames;
 
-  // ... JSX ដដែល
-
   return (
-    <div className="bg-[#111827] rounded-2xl border border-slate-700 p-6 shadow-xl">
-
-      <h2 className="text-2xl font-bold text-cyan-400 mb-6">
+    <div className="rounded-2xl border border-slate-700 bg-[#111827] p-6 shadow-xl">
+      <h2 className="mb-6 text-2xl font-bold text-cyan-400">
         🏆 Top Selling Games
       </h2>
 
       <div className="space-y-5">
-
-        {games.map((game: any, index: number) => (
-
+        {games.map((game, index) => (
           <div
             key={game.name}
-            className="flex justify-between items-center border-b border-slate-700 pb-3"
+            className="flex items-center justify-between border-b border-slate-700 pb-3"
           >
-
             <div>
-
-              <p className="font-semibold text-lg">
+              <p className="text-lg font-semibold">
                 #{index + 1} {game.name}
               </p>
 
-              <p className="text-gray-400 text-sm">
+              <p className="text-sm text-gray-400">
                 {game.orders} Orders
               </p>
-
             </div>
 
-            <span className="text-green-400 font-bold">
+            <span className="font-bold text-green-400">
               ▲
             </span>
-
           </div>
-
         ))}
-
       </div>
-
     </div>
   );
 }

@@ -10,16 +10,18 @@ import {
   Tooltip,
 } from "recharts";
 
+import type { Analytics } from "@/types";
+
 interface RevenueChartProps {
-  analytics: any;
+  analytics: Analytics;
 }
 
 export default function RevenueChart({
   analytics,
 }: RevenueChartProps) {
   return (
-    <div className="bg-[#111827] rounded-2xl p-6 border border-slate-700 shadow-xl">
-      <h2 className="text-2xl font-bold text-cyan-400 mb-6">
+    <div className="rounded-2xl border border-slate-700 bg-[#111827] p-6 shadow-xl">
+      <h2 className="mb-6 text-2xl font-bold text-cyan-400">
         Revenue Overview
       </h2>
 

@@ -1,6 +1,21 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, model, models, Document } from "mongoose";
 
-const OrderSchema = new mongoose.Schema(
+export interface IOrder extends Document {
+  game: string;
+  gameId: string;
+  playerName: string;
+  serverId: string;
+  package: string;
+  price: number;
+  payment: string;
+  phone: string;
+  screenshot: string;
+  status: "Pending" | "Completed";
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const OrderSchema = new Schema<IOrder>(
   {
     game: {
       type: String,
@@ -26,10 +41,11 @@ const OrderSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+
     price: {
-  type: Number,
-  required: true,
-},
+      type: Number,
+      required: true,
+    },
 
     payment: {
       type: String,
@@ -48,6 +64,7 @@ const OrderSchema = new mongoose.Schema(
 
     status: {
       type: String,
+      enum: ["Pending", "Completed"],
       default: "Pending",
     },
   },
@@ -56,5 +73,5 @@ const OrderSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.models.Order ||
-  mongoose.model("Order", OrderSchema);
+export default (models.Order as mongoose.Model<IOrder>) ||
+  model<IOrder>("Order", OrderSchema);

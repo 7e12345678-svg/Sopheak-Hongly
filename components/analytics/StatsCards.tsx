@@ -7,8 +7,10 @@ import {
   Gamepad2,
 } from "lucide-react";
 
+import type { Analytics } from "@/types";
+
 interface StatsCardsProps {
-  analytics: any;
+  analytics: Analytics;
 }
 
 export default function StatsCards({
@@ -50,29 +52,45 @@ export default function StatsCards({
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+    <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
       {cards.map((item) => {
         const Icon = item.icon;
 
         return (
           <div
             key={item.title}
-            className={`rounded-2xl border ${item.border} ${item.bg}
-            p-6 transition hover:scale-105 duration-300`}
+            className={`
+              rounded-2xl
+              border
+              ${item.border}
+              ${item.bg}
+              p-6
+              transition
+              duration-300
+              hover:scale-105
+            `}
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-400 text-sm">
+                <p className="text-sm text-gray-400">
                   {item.title}
                 </p>
 
-                <h2 className="text-4xl font-bold mt-2">
+                <h2 className="mt-2 text-4xl font-bold">
                   {item.value}
                 </h2>
               </div>
 
               <div
-                className={`w-16 h-16 rounded-2xl flex items-center justify-center ${item.bg}`}
+                className={`
+                  flex
+                  h-16
+                  w-16
+                  items-center
+                  justify-center
+                  rounded-2xl
+                  ${item.bg}
+                `}
               >
                 <Icon
                   size={34}

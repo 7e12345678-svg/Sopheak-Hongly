@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+
 import { toast } from "react-hot-toast";
 
 import AddGameModal from "@/app/components/games/AddGameModal";
@@ -8,16 +8,12 @@ import EditGameModal from "@/app/components/games/EditGameModal";
 import GameTable from "@/app/components/games/GameTable";
 import GameStats from "@/app/components/games/GameStats";
 
-export interface Game {
-  _id: string;
-  name: string;
-  slug: string;
-  image: string;
-  description: string;
-  status: boolean;
-  createdAt: string;
-  featured: boolean;
-sortOrder: number;
+import { useCallback, useEffect, useState } from "react";
+import type { Game } from "@/types";
+
+interface GamesResponse {
+  success: boolean;
+  games: Game[];
 }
 
 export default function GamesPage() {
@@ -69,22 +65,27 @@ export default function GamesPage() {
   // Fetch Games
   // =========================
 
-  const fetchGames = async () => {
-    try {
-      const res = await fetch("/api/games");
-      const data = await res.json();
+  const fetchGames = useCallback(async () => {
+  try {
+    const res = await fetch("/api/games");
 
-      setGames(data.games || []);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+    const data: GamesResponse = await res.json();
+
+    if (data.success) {
+      setGames(data.games);
+    } else {
+      setGames([]);
     }
-  };
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+}, []);
 
-  useEffect(() => {
-    fetchGames();
-  }, []);
+useEffect(() => {
+  fetchGames();
+}, [fetchGames]);
 
   // =========================
   // Search
@@ -226,28 +227,24 @@ export default function GamesPage() {
       <div className="flex justify-center items-center gap-3 mt-8">
 
         <button
-          disabled={currentPage === 1}
-          onClick={() =>
-            setCurrentPage((p) => p - 1)
-          }
-          className="px-4 py-2 rounded-lg bg-slate-800 disabled:opacity-40"
-        >
-          Previous
-        </button>
+  disabled={currentPage === 1}
+  onClick={() => setCurrentPage((p) => p - 1)}
+>
+  Previous
+</button>
 
         <span className="text-cyan-400 font-bold">
           {currentPage} / {totalPages || 1}
         </span>
 
         <button
-          disabled={currentPage === totalPages}
-          onClick={() =>
-            setCurrentPage((p) => p + 1)
-          }
-          className="px-4 py-2 rounded-lg bg-slate-800 disabled:opacity-40"
-        >
-          Next
-        </button>
+  disabled={
+    currentPage >= Math.max(totalPages, 1)
+  }
+  onClick={() => setCurrentPage((p) => p + 1)}
+>
+  Next
+</button>
 
       </div>
 

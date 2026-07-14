@@ -9,8 +9,10 @@ import {
   Legend,
 } from "recharts";
 
+import type { Analytics } from "@/types";
+
 interface PaymentChartProps {
-  analytics: any;
+  analytics: Analytics;
 }
 
 const COLORS = [
@@ -43,8 +45,8 @@ export default function PaymentChart({
   ];
 
   return (
-    <div className="bg-[#111827] rounded-2xl border border-slate-700 p-6 shadow-xl">
-      <h2 className="text-2xl font-bold text-cyan-400 mb-6">
+    <div className="rounded-2xl border border-slate-700 bg-[#111827] p-6 shadow-xl">
+      <h2 className="mb-6 text-2xl font-bold text-cyan-400">
         Payment Methods
       </h2>
 
@@ -59,7 +61,7 @@ export default function PaymentChart({
               innerRadius={60}
               paddingAngle={4}
             >
-              {data.map((entry, index) => (
+              {data.map((_, index) => (
                 <Cell
                   key={index}
                   fill={COLORS[index % COLORS.length]}

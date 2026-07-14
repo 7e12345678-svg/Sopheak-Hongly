@@ -2,29 +2,17 @@
 
 import { useEffect, useState } from "react";
 
-interface Customer {
-  phone: string;
-  playerName: string;
-  totalOrders: number;
-  totalSpent: number;
-  favoriteGame: string;
-  lastOrder: string;
-}
-
-interface Order {
-  _id: string;
-  game: string;
-  package: string;
-  price: number;
-  payment: string;
-  status: string;
-  createdAt: string;
-}
+import type { Customer, Order } from "@/types";
 
 interface Props {
   open: boolean;
   customer: Customer | null;
   onClose: () => void;
+}
+
+interface CustomerOrdersResponse {
+  success: boolean;
+  orders: Order[];
 }
 
 export default function CustomerDetailsModal({
@@ -34,60 +22,55 @@ export default function CustomerDetailsModal({
 }: Props) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
-  
 
   useEffect(() => {
-  if (!customer || !open) return;
+    if (!open || !customer) return;
 
-  const phone = customer.phone;
+    const fetchOrders = async () => {
+      try {
+        setLoading(true);
 
-  async function fetchOrders() {
-    try {
-      setLoading(true);
+        const res = await fetch(
+          `/api/customers/${customer.phone}`
+        );
 
-      const res = await fetch(`/api/customers/${phone}`);
-      const data = await res.json();
+        const data: CustomerOrdersResponse =
+          await res.json();
 
-      if (data.success) {
-        setOrders(data.orders);
+        if (data.success) {
+          setOrders(data.orders);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }
+    };
 
-  fetchOrders();
-}, [customer, open]);
-
+    fetchOrders();
+  }, [customer, open]);
 
   if (!open || !customer) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-
-      <div className="bg-[#111827] rounded-2xl border border-slate-700 w-full max-w-3xl p-8 max-h-[90vh] overflow-y-auto">
-
-        <div className="flex justify-between items-center mb-8">
-
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+      <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-slate-700 bg-[#111827] p-8">
+        <div className="mb-8 flex items-center justify-between">
           <h2 className="text-3xl font-bold text-cyan-400">
             👤 Customer Details
           </h2>
 
           <button
             onClick={onClose}
-            className="text-red-400 text-2xl"
+            className="text-2xl text-red-400"
           >
             ✕
           </button>
-
         </div>
 
         {/* Customer Info */}
 
         <div className="grid grid-cols-2 gap-6">
-
           <div>
             <p className="text-gray-400">
               Player Name
@@ -149,44 +132,31 @@ export default function CustomerDetailsModal({
               ).toLocaleDateString()}
             </h3>
           </div>
-
         </div>
 
-        <hr className="border-slate-700 my-8" />
+        <hr className="my-8 border-slate-700" />
 
-        {/* Order History */}
-
-        <h2 className="text-2xl font-bold text-cyan-400 mb-5">
+        <h2 className="mb-5 text-2xl font-bold text-cyan-400">
           📦 Order History
         </h2>
 
         {loading ? (
-
-          <div className="text-center py-10">
+          <div className="py-10 text-center">
             Loading...
           </div>
-
         ) : orders.length === 0 ? (
-
-          <div className="text-center py-10 text-gray-400">
+          <div className="py-10 text-center text-gray-400">
             No Orders Found
           </div>
-
         ) : (
-
           <div className="space-y-4">
-
             {orders.map((order) => (
-
               <div
                 key={order._id}
-                className="bg-slate-800 rounded-xl p-5 border border-slate-700"
+                className="rounded-xl border border-slate-700 bg-slate-800 p-5"
               >
-
-                <div className="flex justify-between items-center">
-
+                <div className="flex items-center justify-between">
                   <div>
-
                     <h3 className="text-lg font-bold">
                       {order.game}
                     </h3>
@@ -195,22 +165,20 @@ export default function CustomerDetailsModal({
                       {order.package}
                     </p>
 
-                    <p className="text-sm text-gray-500 mt-2">
+                    <p className="mt-2 text-sm text-gray-500">
                       {new Date(
                         order.createdAt
                       ).toLocaleString()}
                     </p>
-
                   </div>
 
                   <div className="text-right">
-
                     <p className="text-2xl font-bold text-green-400">
                       ${order.price}
                     </p>
 
                     <span
-                      className={`inline-block mt-2 px-3 py-1 rounded-full text-sm ${
+                      className={`mt-2 inline-block rounded-full px-3 py-1 text-sm ${
                         order.status === "Completed"
                           ? "bg-green-500/20 text-green-400"
                           : "bg-yellow-500/20 text-yellow-400"
@@ -218,21 +186,13 @@ export default function CustomerDetailsModal({
                     >
                       {order.status}
                     </span>
-
                   </div>
-
                 </div>
-
               </div>
-
             ))}
-
           </div>
-
         )}
-
       </div>
-
     </div>
   );
 }

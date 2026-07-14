@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { GamePackage } from "@/app/types/package";
+import type { Game } from "@/types";
+
 
 export default function usePackages() {
-  const [games, setGames] = useState<GamePackage[]>([]);
+  const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchGames = async () => {

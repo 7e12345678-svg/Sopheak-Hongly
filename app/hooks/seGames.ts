@@ -1,35 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Game } from "@/app/types/game";
+import { useCallback, useEffect, useState } from "react";
+import type { Game } from "@/types";
 
-export default function useGames() {
+export default function usePackages() {
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchGames();
-  }, []);
-
-  const fetchGames = async () => {
+  const fetchGames = useCallback(async () => {
     try {
       const res = await fetch("/api/games");
       const data = await res.json();
 
       if (data.success) {
-        // បង្ហាញតែ Game ដែល Active
-        const activeGames = data.games.filter(
-          (game: Game) => game.status
-        );
-
-        setGames(activeGames);
+        setGames(data.games);
       }
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchGames();
+  }, [fetchGames]);
 
   return {
     games,

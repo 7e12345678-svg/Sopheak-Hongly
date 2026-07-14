@@ -56,12 +56,7 @@ export default function DashboardHeader({
           </p>
         </div>
 
-        <button
-          onClick={onLogout}
-          className="mt-5 md:mt-0 px-6 py-3 rounded-xl bg-red-600 hover:bg-red-500 transition font-bold"
-        >
-          Logout
-        </button>
+        
 
       </div>
 
