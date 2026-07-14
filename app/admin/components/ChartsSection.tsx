@@ -55,7 +55,7 @@ export default function ChartsSection({
 
       </div>
 
-      <RecentActivity orders={orders} />
+      <RecentActivity />
     </>
   );
 }
