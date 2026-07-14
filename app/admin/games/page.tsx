@@ -16,6 +16,8 @@ export interface Game {
   description: string;
   status: boolean;
   createdAt: string;
+  featured: boolean;
+sortOrder: number;
 }
 
 export default function GamesPage() {
@@ -34,6 +36,34 @@ export default function GamesPage() {
     useState(1);
 
   const itemsPerPage = 5;
+
+  const toggleFeatured = async (
+  id: string,
+  featured: boolean
+) => {
+  try {
+    const res = await fetch(
+      `/api/games/${id}/featured`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          featured: !featured,
+        }),
+      }
+    );
+
+    const data = await res.json();
+
+    if (!data.success) return;
+
+    fetchGames();
+  } catch (err) {
+    console.error(err);
+  }
+};
 
   // =========================
   // Fetch Games
@@ -183,10 +213,12 @@ export default function GamesPage() {
         loading={loading}
         refresh={fetchGames}
         onEdit={(game) => {
+          
           setSelectedGame(game);
           setOpenEdit(true);
         }}
         onDelete={deleteGame}
+        onToggleFeatured={toggleFeatured}
       />
 
       {/* Pagination */}

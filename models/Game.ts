@@ -1,16 +1,36 @@
 import mongoose, { Schema } from "mongoose";
 
-const GameSchema = new Schema(
+const PackageSchema = new Schema(
   {
     name: {
       type: String,
       required: true,
     },
 
+    price: {
+      type: Number,
+      required: true,
+    },
+  },
+  {
+    _id: false,
+  }
+);
+
+const GameSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
     slug: {
       type: String,
       required: true,
       unique: true,
+      lowercase: true,
+      trim: true,
     },
 
     image: {
@@ -21,6 +41,21 @@ const GameSchema = new Schema(
     description: {
       type: String,
       default: "",
+    },
+
+    packages: {
+      type: [PackageSchema],
+      default: [],
+    },
+
+    featured: {
+      type: Boolean,
+      default: false,
+    },
+
+    sortOrder: {
+      type: Number,
+      default: 0,
     },
 
     status: {
@@ -34,4 +69,4 @@ const GameSchema = new Schema(
 );
 
 export default mongoose.models.Game ||
-mongoose.model("Game", GameSchema);
+  mongoose.model("Game", GameSchema);

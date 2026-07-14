@@ -9,61 +9,38 @@ import {
 } from "next/navigation";
 import toast from "react-hot-toast";
 
-const paymentLogos = {
+interface Package {
+  name: string;
+  price: number;
+}
+
+interface GameData {
+  _id: string;
+  name: string;
+  slug: string;
+  image: string;
+  description: string;
+  packages: Package[];
+}
+
+  const paymentLogos = {
   ABA: "/images/aba.jpg",
   Wing: "/images/wing.jpg",
   ACLEDA: "/images/acleda.jpg",
   AMK: "/images/amk.jpg",
 };
-const gameImages = {
-  "Mobile Legends": "/images/mlbb.jpg",
-  "PUBG Mobile": "/images/pubg.jpg",
-  "Free Fire": "/images/freefire.jpg",
-  Roblox: "/images/roblox.jpg",
-};
-
-const gamePackages = {
-  "Mobile Legends": [
-    { name: "86 Diamonds", price: "$1" },
-    { name: "172 Diamonds", price: "$3.5" },
-    { name: "257 Diamonds", price: "$4" },
-    { name: "514 Diamonds", price: "$10" },
-  ],
-
-  "PUBG Mobile": [
-    { name: "60 UC", price: "$1" },
-    { name: "325 UC", price: "$5" },
-    { name: "660 UC", price: "$10" },
-    { name: "1800 UC", price: "$25" },
-  ],
-
-  "Free Fire": [
-    { name: "100 Diamonds", price: "$1" },
-    { name: "310 Diamonds", price: "$3" },
-    { name: "520 Diamonds", price: "$5" },
-    { name: "1060 Diamonds", price: "$10" },
-  ],
-
-  Roblox: [
-    { name: "80 Robux", price: "$1" },
-    { name: "400 Robux", price: "$5" },
-    { name: "800 Robux", price: "$10" },
-    { name: "1700 Robux", price: "$20" },
-  ],
-};
 
 export default function TopUpPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const game = searchParams.get("game");
-
-  const packages =
-    gamePackages[game as keyof typeof gamePackages] ??
-    gamePackages["Mobile Legends"];
-
+  
   const [payment, setPayment] = useState("ABA");
 
+  const game = searchParams.get("game");
+
   const [screenshot, setScreenshot] = useState<File | null>(null);
+
+ 
 
   const [preview, setPreview] = useState("");
 
@@ -72,19 +49,55 @@ export default function TopUpPage() {
   const [success, setSuccess] = useState(false);
 
   const [formData, setFormData] = useState({
-    
     gameId: "",
     playerName: "",
     serverId: "",
-    package: packages[0].name,
+    package: "",
     phone: "",
   });
+
+
+  const [gameData, setGameData] =
+
+  useState<GameData | null>(null);
+
+   const packages = gameData?.packages ?? [];
+
+
   useEffect(() => {
+  if (packages.length === 0) return;
+
   setFormData((prev) => ({
     ...prev,
     package: packages[0].name,
   }));
-}, [game, packages]);
+}, [packages]);
+
+useEffect(() => {
+  if (!game) return;
+
+  const slug = game
+    .toLowerCase()
+    .replace(/\s+/g, "-");
+
+  const fetchGame = async () => {
+    try {
+      const res = await fetch(
+        `/api/games/by-slug/${slug}`
+      );
+
+      const data = await res.json();
+
+      if (data.success) {
+        setGameData(data.game);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  fetchGame();
+}, [game]);
 
   const handleSubmit = async () => {
   if (
@@ -123,7 +136,7 @@ export default function TopUpPage() {
     form.append("package", formData.package);
 form.append(
   "price",
-  selectedPackage?.price.replace("$", "") || "0"
+  String(selectedPackage?.price ?? 0)
 );
     form.append("payment", payment);
     form.append("phone", formData.phone);
@@ -151,7 +164,7 @@ if (data.success) {
     gameId: "",
     playerName: "",
     serverId: "",
-    package: packages[0].name,
+    package: "",
     phone: "",
   });
 
@@ -170,26 +183,27 @@ if (data.success) {
   }
 };
   return (
-  <main className="min-h-screen bg-slate-950 text-white py-20 px-6">
-    <div className="max-w-2xl mx-auto bg-slate-900 rounded-xl p-8 shadow-xl">
+  <main className="min-h-screen bg-slate-950 text-white py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-3xl mx-auto bg-slate-900 rounded-2xl p-4 sm:p-5 sm:p-8 shadow-2xl border border-slate-800">
 
       {/* Game Image */}
-      <div className="flex justify-center mb-8">
-        <Image
-        src={gameImages[game as keyof typeof gameImages] ??
-    "/images/mlbb.jpg"
-  }
-          alt={game ?? "Game"}
-          width={180}
-          height={180}
-          className="rounded-2xl shadow-lg"
-        />
-      </div>
+     {/* Game Image */}
+<div className="flex justify-center mb-8">
+  <Image
+    src={gameData?.image || "/images/mlbb.jpg"}
+    alt={gameData?.name || "Game"}
+    width={160}
+    height={160}
+    className="rounded-2xl shadow-xl w-36 h-36 sm:w-44 sm:h-44 object-cover"
+  />
+</div>
 
-      {/* Title */}
-      <h1 className="text-4xl font-bold text-cyan-400 text-center mb-8">
-        {game ? `${game} Top Up` : "Game Top Up"}
-      </h1>
+{/* Title */}
+<h1 className="w-full rounded-xl bg-slate-800 p-3 sm:p-4 outline-none focus:ring-2 focus:ring-cyan-500">
+  {gameData?.name
+    ? `${gameData.name} Top Up`
+    : "Game Top Up"}
+</h1>
 
       {/* Game */}
       <div className="mb-5">
@@ -197,7 +211,7 @@ if (data.success) {
 
         <input
           type="text"
-          value={game ?? ""}
+          value={gameData?.name ?? ""}
           readOnly
           className="w-full p-3 rounded-lg bg-slate-800"
         />
@@ -281,49 +295,61 @@ pattern="[0-9]*"
 
       {/* Top Up Amount */}
 <div className="mb-6">
-  <label className="block text-lg font-bold text-cyan-400 mb-4">
+  <label className="block text-base sm:text-lg font-bold text-cyan-400 mb-4">
     💎 Top Up Amount
   </label>
 
-  <div className="grid grid-cols-2 gap-4">
-    {packages.map((item) => (
-      <button
-        key={item.name}
-        type="button"
-        disabled={loading}
-        onClick={() =>
-          setFormData({
-            ...formData,
-            package: item.name,
-          })
-        }
-        className={`rounded-2xl p-5 border-2 transition ${
-          formData.package === item.name
-            ? "bg-cyan-500 text-black border-cyan-300 scale-105"
-            : "bg-slate-800 border-slate-700 hover:border-cyan-400"
-        }`}
-      >
-        <div className="text-4xl">💎</div>
+  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    {packages.length === 0 ? (
 
-        <h3 className="font-bold mt-2">
-          {item.name}
-        </h3>
+  <div className="col-span-2 rounded-xl bg-slate-800 p-6 text-center text-slate-400">
+    No packages available.
+  </div>
 
-        <p className="text-sm mt-1">
-          {item.price}
-        </p>
-      </button>
-    ))}
+) : (
+
+  packages.map((item, index) => (
+
+    <button
+      key={`${item.name}-${index}`}
+      type="button"
+      disabled={loading}
+      onClick={() =>
+        setFormData({
+          ...formData,
+          package: item.name,
+        })
+      }
+      className={`rounded-2xl p-4 sm:p-5 border-2 transition ${
+        formData.package === item.name
+          ? "bg-cyan-500 text-black border-cyan-300 scale-105"
+          : "bg-slate-800 border-slate-700 hover:border-cyan-400"
+      }`}
+    >
+      <div className="text-3xl sm:text-4xl">💎</div>
+
+      <h3 className="font-bold mt-2">
+        {item.name}
+      </h3>
+
+      <p className="text-sm mt-1">
+        ${item.price}
+      </p>
+    </button>
+
+  ))
+
+)}
   </div>
 </div>
 
 {/* Payment */}
 <div className="mb-6">
-  <label className="block text-lg font-bold text-cyan-400 mb-4">
+  <label className="block text-base sm:text-lg font-bold text-cyan-400 mb-4">
     💳 Payment Method
   </label>
 
-  <div className="grid grid-cols-2 gap-4">
+  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
     {["ABA", "Wing", "ACLEDA", "AMK"].map((method) => (
       
       <button
@@ -396,9 +422,9 @@ if (file.size > 5 * 1024 * 1024) {
       <Image
         src={preview}
         alt="Preview"
-        width={220}
-        height={220}
-        className="rounded-xl border-2 border-cyan-500"
+        width={180}
+        height={180}
+        className="rounded-xl border-2 border-cyan-500 w-44 h-44 sm:w-56 sm:h-56 object-cover"
       />
     </div>
   )}
@@ -415,9 +441,9 @@ if (file.size > 5 * 1024 * 1024) {
       ? "/images/AMK.png"
       : `/images/${payment.toLowerCase()}.png`}
     alt={payment}
-    width={220}
-    height={220}
-    className="mx-auto rounded-xl"
+    width={180}
+    height={180}
+    className="mx-auto rounded-xl w-44 h-44 sm:w-56 sm:h-56"
   />
 </div>
 
@@ -425,7 +451,7 @@ if (file.size > 5 * 1024 * 1024) {
 <button
   onClick={handleSubmit}
   disabled={loading}
-  className={`w-full py-4 rounded-xl text-lg font-bold transition ${
+  className={`w-full py-4 rounded-xl text-base sm:text-lg font-bold transition ${
     loading
       ? "bg-gray-500 cursor-not-allowed"
       : "bg-gradient-to-r from-cyan-500 to-blue-600 hover:scale-105"
@@ -447,7 +473,7 @@ Submitting...
 {/* Success Modal */}
 {success && (
   <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-    <div className="bg-slate-900 rounded-2xl p-8 w-[380px] text-center">
+    <div className="bg-slate-900 rounded-2xl p-8 w-[92%] max-w-md text-center">
 
       <div className="text-6xl mb-4">🎉</div>
 

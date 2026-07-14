@@ -18,7 +18,10 @@ export default function useAnalytics(orders: Order[]) {
     return () => clearInterval(timer);
   }, []);
 
+  // =========================
   // Greeting
+  // =========================
+
   const hour = currentTime.getHours();
 
   const greeting =
@@ -46,17 +49,9 @@ export default function useAnalytics(orders: Order[]) {
   // Revenue
   // =========================
 
-  const getPrice = (pkg: string) => {
-    const price = parseFloat(
-      pkg.replace(/[^\d.]/g, "")
-    );
-
-    return isNaN(price) ? 0 : price;
-  };
-
   const totalRevenue = orders
     .filter((o) => o.status === "Completed")
-    .reduce((sum, o) => sum + getPrice(o.package), 0);
+    .reduce((sum, o) => sum + Number(o.price || 0), 0);
 
   const today = new Date().toDateString();
 
@@ -66,7 +61,7 @@ export default function useAnalytics(orders: Order[]) {
         o.status === "Completed" &&
         new Date(o.createdAt).toDateString() === today
     )
-    .reduce((sum, o) => sum + getPrice(o.package), 0);
+    .reduce((sum, o) => sum + Number(o.price || 0), 0);
 
   const month = currentTime.getMonth();
   const year = currentTime.getFullYear();
@@ -81,10 +76,10 @@ export default function useAnalytics(orders: Order[]) {
         d.getFullYear() === year
       );
     })
-    .reduce((sum, o) => sum + getPrice(o.package), 0);
+    .reduce((sum, o) => sum + Number(o.price || 0), 0);
 
   // =========================
-  // Best Game
+  // Best Selling Game
   // =========================
 
   const bestSellingGame = useMemo(() => {
@@ -109,8 +104,7 @@ export default function useAnalytics(orders: Order[]) {
     const count: Record<string, number> = {};
 
     orders.forEach((o) => {
-      count[o.payment] =
-        (count[o.payment] || 0) + 1;
+      count[o.payment] = (count[o.payment] || 0) + 1;
     });
 
     return (
@@ -124,9 +118,7 @@ export default function useAnalytics(orders: Order[]) {
     totalOrders === 0
       ? 0
       : Math.round(
-          (Number(mostUsedPayment[1]) /
-            totalOrders) *
-            100
+          (Number(mostUsedPayment[1]) / totalOrders) * 100
         );
 
   // =========================
@@ -153,11 +145,19 @@ export default function useAnalytics(orders: Order[]) {
   // =========================
 
   const exportExcel = () => {
-    const sheet =
-      XLSX.utils.json_to_sheet(orders);
+    const exportData = orders.map((o) => ({
+      Player: o.playerName,
+      Game: o.game,
+      Package: o.package,
+      Price: o.price,
+      Payment: o.payment,
+      Status: o.status,
+      Date: new Date(o.createdAt).toLocaleString(),
+    }));
 
-    const workbook =
-      XLSX.utils.book_new();
+    const sheet = XLSX.utils.json_to_sheet(exportData);
+
+    const workbook = XLSX.utils.book_new();
 
     XLSX.utils.book_append_sheet(
       workbook,
@@ -165,10 +165,7 @@ export default function useAnalytics(orders: Order[]) {
       "Orders"
     );
 
-    XLSX.writeFile(
-      workbook,
-      "orders.xlsx"
-    );
+    XLSX.writeFile(workbook, "orders.xlsx");
   };
 
   return {

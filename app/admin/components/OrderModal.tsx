@@ -3,20 +3,7 @@
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
-
-interface Order {
-  _id: string;
-  game: string;
-  playerName: string;
-  gameId: string;
-  serverId: string;
-  package: string;
-  payment: string;
-  phone: string;
-  screenshot: string;
-  status: string;
-  createdAt: string;
-}
+import type { Order } from "../hooks/useOrders";
 
 interface Props {
   order: Order | null;

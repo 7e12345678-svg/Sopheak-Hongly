@@ -1,20 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import type { Order } from "../hooks/useOrders";
 
-interface Order {
-  _id: string;
-  game: string;
-  playerName: string;
-  gameId: string;
-  serverId: string;
-  package: string;
-  payment: string;
-  phone: string;
-  screenshot: string;
-  status: string;
-  createdAt: string;
-}
 
 interface Props {
   orders: Order[];

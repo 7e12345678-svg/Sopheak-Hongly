@@ -1,17 +1,22 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
-import cloudinary from "@/lib/cloudinary";
 import Game from "@/models/Game";
+import cloudinary from "@/lib/cloudinary";
 import { requireAdmin } from "@/lib/auth";
 
-// ================= GET =================
+// =========================
+// GET All Games
+// =========================
+
 export async function GET() {
   try {
     await connectDB();
 
     const games = await Game.find().sort({
-      createdAt: -1,
-    });
+  featured: -1,
+  sortOrder: 1,
+  createdAt: -1,
+});
 
     return NextResponse.json({
       success: true,
@@ -32,7 +37,10 @@ export async function GET() {
   }
 }
 
-// ================= POST =================
+// =========================
+// Create Game
+// =========================
+
 export async function POST(req: Request) {
   try {
     await requireAdmin();
@@ -42,47 +50,59 @@ export async function POST(req: Request) {
     const formData = await req.formData();
 
     const name = formData.get("name") as string;
+
     const slug = formData.get("slug") as string;
-    const description = formData.get("description") as string;
+
+    const description =
+      (formData.get("description") as string) || "";
+
+    const featured =
+      formData.get("featured") === "true";
+
+    const sortOrder = Number(
+      formData.get("sortOrder") || 0
+    );
+
+    const status =
+      formData.get("status") !== "false";
+
     const image = formData.get("image") as File;
 
-    if (!name || !slug || !image) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Please fill all required fields",
-        },
-        {
-          status: 400,
+    let imageUrl = "";
+
+    if (image && image.size > 0) {
+      const bytes = await image.arrayBuffer();
+
+      const buffer = Buffer.from(bytes);
+
+      const result: any = await new Promise(
+        (resolve, reject) => {
+          cloudinary.uploader
+            .upload_stream(
+              {
+                folder: "game-topup/games",
+              },
+              (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+              }
+            )
+            .end(buffer);
         }
       );
+
+      imageUrl = result.secure_url;
     }
 
-    // Upload Image to Cloudinary
-    const bytes = await image.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    const result: any = await new Promise((resolve, reject) => {
-      cloudinary.uploader
-        .upload_stream(
-          {
-            folder: "games",
-          },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          }
-        )
-        .end(buffer);
-    });
-
-    // Save Game
     const game = await Game.create({
       name,
       slug,
+      image: imageUrl,
       description,
-      image: result.secure_url,
-      status: true,
+      featured,
+      sortOrder,
+      status,
+      packages: [],
     });
 
     return NextResponse.json({

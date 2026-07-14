@@ -15,7 +15,7 @@ interface Order {
   package: string;
   payment: string;
   phone: string;
-  screenshot: string;
+  screenshot?: string;
   status: string;
   createdAt: string;
 }

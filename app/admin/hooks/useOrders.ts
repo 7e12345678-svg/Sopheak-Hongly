@@ -1,19 +1,26 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { toast } from "react-hot-toast";
+import { useEffect, useRef, useState } from "react";
 
 export interface Order {
   _id: string;
+
   game: string;
   gameId: string;
+
   playerName: string;
   serverId: string;
+
   package: string;
+  price: number;
+
   payment: string;
   phone: string;
-  screenshot: string;
-  status: string;
+
+  screenshot?: string;
+
+  status: "Pending" | "Completed";
+
   createdAt: string;
 }
 
@@ -21,102 +28,80 @@ export default function useOrders() {
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
+
   const [selectedOrder, setSelectedOrder] =
     useState<Order | null>(null);
-
-  const [lastOrderCount, setLastOrderCount] = useState(0);
 
   const fetchOrders = async () => {
     try {
       const res = await fetch("/api/orders");
+
       const data = await res.json();
 
-      const newOrders: Order[] = data.orders || [];
-
-      if (
-        lastOrderCount > 0 &&
-        newOrders.length > lastOrderCount
-      ) {
-        toast.success("🎉 New Top-Up Order!");
-
-        if (audioRef.current) {
-          audioRef.current.currentTime = 0;
-          audioRef.current.play().catch(console.error);
-        }
+      if (data.success) {
+        setOrders(data.orders || []);
       }
-
-      setOrders(newOrders);
-      setLastOrderCount(newOrders.length);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.error(error);
     }
   };
 
-  const updateStatus = async (id: string) => {
-  try {
-    const res = await fetch(`/api/orders/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        status: "Completed",
-      }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      toast.error(data.message || "Failed to update order");
-      return;
-    }
-
-    toast.success("✅ Order Confirmed");
-
+  useEffect(() => {
     fetchOrders();
-  } catch (err) {
-    console.error(err);
-    toast.error("Something went wrong");
-  }
-};
+  }, []);
+
+  const updateStatus = async (id: string) => {
+    try {
+      const res = await fetch(`/api/orders/${id}`, {
+        method: "PUT",
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        await fetchOrders();
+
+        if (selectedOrder?._id === id) {
+          setSelectedOrder(data.order);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const deleteOrder = async (id: string) => {
-  if (!confirm("Delete this order?")) return;
+    if (!confirm("Delete this order?")) return;
 
-  try {
-    const res = await fetch(`/api/orders/${id}`, {
-      method: "DELETE",
-    });
+    try {
+      const res = await fetch(`/api/orders/${id}`, {
+        method: "DELETE",
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok) {
-      toast.error(data.message || "Failed to delete order");
-      return;
+      if (data.success) {
+        await fetchOrders();
+
+        if (selectedOrder?._id === id) {
+          setSelectedOrder(null);
+        }
+      }
+    } catch (error) {
+      console.error(error);
     }
-
-    toast.success("🗑 Order Deleted");
-
-    fetchOrders();
-  } catch (err) {
-    console.error(err);
-    toast.error("Something went wrong");
-  }
-};
+  };
 
   return {
     audioRef,
 
     orders,
-    loading,
 
     selectedOrder,
     setSelectedOrder,
 
     fetchOrders,
+
     updateStatus,
     deleteOrder,
   };

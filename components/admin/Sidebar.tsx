@@ -7,6 +7,7 @@ import { Users } from "lucide-react";
 import {
   FaHome,
   FaGamepad,
+  FaBoxOpen,
   FaShoppingCart,
   FaUsers,
   FaMoneyBillWave,
@@ -32,10 +33,22 @@ export default function Sidebar() {
         />
 
         <SidebarItem
-          href="/admin/games"
-          icon={FaGamepad}
-          title="Games"
-        />
+  href="/admin/games"
+  icon={FaGamepad}
+  title="Games"
+/>
+
+<SidebarItem
+  href="/admin/packages"
+  icon={FaBoxOpen}
+  title="Packages"
+/>
+
+<SidebarItem
+  href="/admin/orders"
+  icon={FaShoppingCart}
+  title="Orders"
+/>
 
         <SidebarItem
           href="/admin/orders"

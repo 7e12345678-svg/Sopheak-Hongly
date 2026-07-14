@@ -6,8 +6,15 @@ interface Props {
   games: Game[];
   loading: boolean;
   refresh: () => void;
+
   onEdit: (game: Game) => void;
+
   onDelete: (id: string) => void;
+
+  onToggleFeatured: (
+    id: string,
+    featured: boolean
+  ) => void;
 }
 
 export default function GameTable({
@@ -15,6 +22,7 @@ export default function GameTable({
   loading,
   onEdit,
   onDelete,
+  onToggleFeatured,
 }: Props) {
   if (loading) {
     return (
@@ -100,14 +108,15 @@ export default function GameTable({
 
             {games.map((game) => (
 
-              <GameRow
-                key={game._id}
-                game={game}
-                onEdit={onEdit}
-                onDelete={onDelete}
-              />
+  <GameRow
+    key={game._id}
+    game={game}
+    onEdit={onEdit}
+    onDelete={onDelete}
+    onToggleFeatured={onToggleFeatured}
+  />
 
-            ))}
+))}
 
           </tbody>
 
