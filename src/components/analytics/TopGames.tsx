@@ -1,8 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useMemo } from "react";
 import {
   Trophy,
+  Medal,
+  Award,
   Gamepad2,
   TrendingUp,
 } from "lucide-react";
@@ -19,10 +22,42 @@ export default function TopGames({
 
   const games = analytics.topGames;
 
-  const totalOrders = games.reduce(
-    (sum, game) => sum + game.orders,
-    0
-  );
+  const totalOrders = useMemo(
+  () =>
+    games.reduce(
+      (sum, game) => sum + game.orders,
+      0
+    ),
+  [games]
+);
+
+const getRank = (index: number) => {
+  switch (index) {
+    case 0:
+      return {
+        icon: Trophy,
+        color: "text-yellow-400",
+      };
+
+    case 1:
+      return {
+        icon: Medal,
+        color: "text-slate-300",
+      };
+
+    case 2:
+      return {
+        icon: Award,
+        color: "text-orange-400",
+      };
+
+    default:
+      return {
+        icon: Gamepad2,
+        color: "text-cyan-400",
+      };
+  }
+};
 
   const getPercentage = (orders: number) => {
     if (totalOrders === 0) return 0;
@@ -44,6 +79,24 @@ export default function TopGames({
         return "text-cyan-400";
     }
   };
+    if (games.length === 0) {
+  return (
+    <div className="rounded-3xl border border-slate-700 bg-slate-900 p-10 text-center">
+      <Trophy
+        size={50}
+        className="mx-auto mb-4 text-slate-500"
+      />
+
+      <h2 className="text-2xl font-bold text-white">
+        No Games Yet
+      </h2>
+
+      <p className="mt-2 text-slate-400">
+        Completed orders will appear here.
+      </p>
+    </div>
+  );
+}
 
     return (
     <div className="overflow-hidden rounded-3xl border border-slate-700 bg-slate-900/90 shadow-2xl">
@@ -74,7 +127,15 @@ export default function TopGames({
       {/* Games */}
       <div className="space-y-6 p-6">
         {games.map((game, index) => {
+          
+          
           const percent = getPercentage(game.orders);
+          const { icon: RankIcon, color } = getRank(index);
+          <RankIcon
+  size={24}
+  className={color}
+/>
+          
 
           return (
             <motion.div
@@ -109,10 +170,10 @@ export default function TopGames({
                       bg-slate-900
                     `}
                   >
-                    <Gamepad2
-                      size={24}
-                      className={getRankColor(index)}
-                    />
+                    <RankIcon
+  size={24}
+  className={getRankColor(index)}
+/>
                   </div>
 
                   <div>

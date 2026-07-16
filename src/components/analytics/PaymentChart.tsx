@@ -7,8 +7,8 @@ import {
   Cell,
   Tooltip,
   Legend,
-  TooltipProps,
 } from "recharts";
+
 
 import type { Analytics } from "@/types";
 
@@ -22,6 +22,9 @@ const COLORS = [
   "#f59e0b",
   "#ec4899",
 ];
+
+
+
 
 export default function PaymentChart({
   analytics,
@@ -52,29 +55,31 @@ export default function PaymentChart({
   );
 
   const topPayment =
-    chartData.reduce((prev, current) =>
-      prev.value > current.value
-        ? prev
-        : current
-    );
+  chartData.length === 0
+    ? { name: "-", value: 0 }
+    : chartData.reduce((max, item) =>
+        item.value > max.value
+          ? item
+          : max
+      );
 
-  function CustomTooltip({
-    active,
-    payload,
-  }: TooltipProps<number, string>) {
+function CustomTooltip(props: any) {
+  const { active, payload } = props;
 
     if (!active || !payload?.length)
       return null;
 
     const item = payload[0];
 
+const name = String(item.name ?? "");
+const value = Number(item.value ?? 0);
+
+
+
     const percentage =
-      totalPayments === 0
-        ? 0
-        : (
-            (Number(item.value) / totalPayments) *
-            100
-          ).toFixed(1);
+  totalPayments === 0
+    ? "0.0"
+    : ((value / totalPayments) * 100).toFixed(1);
 
     return (
       <div
@@ -90,11 +95,11 @@ export default function PaymentChart({
         "
       >
         <p className="text-sm text-slate-400">
-          {item.name}
+          {name}
         </p>
 
         <h3 className="mt-2 text-2xl font-bold text-cyan-400">
-          {item.value} Payments
+          {value} Payments
         </h3>
 
         <p className="mt-1 text-xs text-slate-500">
@@ -145,7 +150,7 @@ export default function PaymentChart({
       </div>
 
       {/* Chart */}
-      <div className="flex h-[420px] items-center justify-center p-6">
+      <div className="relative flex h-[420px] items-center justify-center p-6">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
@@ -157,16 +162,17 @@ export default function PaymentChart({
               innerRadius={85}
               outerRadius={135}
               paddingAngle={5}
-              animationDuration={900}
+              animationDuration={700}
+animationEasing="ease-out"
             >
-              {chartData.map((_, index) => (
-                <Cell
-                  key={index}
-                  fill={COLORS[index % COLORS.length]}
-                  stroke="#0f172a"
-                  strokeWidth={3}
-                />
-              ))}
+              {chartData.map((item, index) => (
+  <Cell
+    key={item.name}
+    fill={COLORS[index % COLORS.length]}
+    stroke="#0f172a"
+    strokeWidth={3}
+  />
+))}
             </Pie>
 
             <Tooltip content={<CustomTooltip />} />

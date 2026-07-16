@@ -1,6 +1,7 @@
 "use client";
 
 import { formatCurrency } from "@/utils/formatCurrency";
+
 import {
   ResponsiveContainer,
   AreaChart,
@@ -9,7 +10,6 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  TooltipProps,
 } from "recharts";
 
 interface RevenueChartProps {
@@ -35,23 +35,63 @@ const MONTHS = [
   "Dec",
 ];
 
+type TooltipData = {
+  active?: boolean;
+  payload?: any[];
+  label?: string;
+};
+
+function CustomTooltip({
+  active,
+  payload,
+  label,
+}: TooltipData) {
+  if (!active || !payload || payload.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="rounded-2xl border border-cyan-500/30 bg-slate-900/95 px-5 py-4 shadow-2xl backdrop-blur-xl">
+      <p className="text-sm text-slate-400">
+        {label}
+      </p>
+
+      <h3 className="mt-2 text-2xl font-bold text-cyan-400">
+        {formatCurrency(Number(payload[0].value))}
+      </h3>
+
+      <p className="mt-1 text-xs text-slate-500">
+        Revenue this month
+      </p>
+    </div>
+  );
+}
+
 export default function RevenueChart({
   orders,
 }: RevenueChartProps) {
-  const revenueByMonth = new Array(12).fill(0);
+  const revenueByMonth = Array(12).fill(0);
 
   orders.forEach((order) => {
     if (order.status !== "Completed") return;
 
-    const month = new Date(order.createdAt).getMonth();
+    const month = new Date(
+      order.createdAt
+    ).getMonth();
 
-    revenueByMonth[month] += Number(order.price || 0);
+    revenueByMonth[month] += Number(
+      order.price || 0
+    );
   });
 
-  const chartData = MONTHS.map((month, index) => ({
-    month,
-    revenue: Number(revenueByMonth[index].toFixed(2)),
-  }));
+  const chartData = MONTHS.map(
+    (month, index) => ({
+      month,
+      revenue: Number(
+        revenueByMonth[index].toFixed(2)
+      ),
+    })
+  );
 
   const totalRevenue = chartData.reduce(
     (sum, item) => sum + item.revenue,
@@ -59,47 +99,21 @@ export default function RevenueChart({
   );
 
   const highestMonth =
-    chartData.reduce((prev, current) =>
-      prev.revenue > current.revenue ? prev : current
-    );
+    chartData.length === 0
+      ? {
+          month: "-",
+          revenue: 0,
+        }
+      : chartData.reduce((prev, current) =>
+          prev.revenue > current.revenue
+            ? prev
+            : current
+        );
 
-  function CustomTooltip({
-    active,
-    payload,
-    label,
-  }: TooltipProps<number, string>) {
-    if (!active || !payload?.length) return null;
-
-    return (
-      <div
-        className="
-          rounded-2xl
-          border
-          border-cyan-500/30
-          bg-slate-900/95
-          backdrop-blur-xl
-          px-5
-          py-4
-          shadow-2xl
-        "
-      >
-        <p className="text-sm text-slate-400">
-          {label}
-        </p>
-
-        <h3 className="mt-2 text-2xl font-bold text-cyan-400">
-          {formatCurrency(Number(payload[0].value))}
-        </h3>
-
-        <p className="mt-1 text-xs text-slate-500">
-          Revenue this month
-        </p>
-      </div>
-    );
-  }
-      return (
+  return (
     <div className="overflow-hidden rounded-3xl border border-slate-700 bg-slate-900/90 shadow-2xl">
       {/* Header */}
+
       <div className="flex flex-col gap-5 border-b border-slate-800 p-6 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <p className="text-sm uppercase tracking-[0.25em] text-cyan-400">
@@ -111,7 +125,8 @@ export default function RevenueChart({
           </h2>
 
           <p className="mt-2 text-slate-400">
-            Monthly completed order revenue
+            Monthly completed order
+            revenue
           </p>
         </div>
 
@@ -122,7 +137,9 @@ export default function RevenueChart({
             </p>
 
             <h3 className="mt-2 text-2xl font-bold text-emerald-400">
-              {formatCurrency(totalRevenue)}
+              {formatCurrency(
+                totalRevenue
+              )}
             </h3>
           </div>
 
@@ -139,8 +156,12 @@ export default function RevenueChart({
       </div>
 
       {/* Chart */}
+
       <div className="h-[420px] p-6">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer
+          width="100%"
+          height="100%"
+        >
           <AreaChart
             data={chartData}
             margin={{
@@ -161,7 +182,7 @@ export default function RevenueChart({
                 <stop
                   offset="0%"
                   stopColor="#06b6d4"
-                  stopOpacity={0.75}
+                  stopOpacity={0.7}
                 />
 
                 <stop
@@ -189,7 +210,9 @@ export default function RevenueChart({
             />
 
             <YAxis
-              tickFormatter={(value) => `$${value}`}
+              tickFormatter={(value) =>
+                `$${value}`
+              }
               tick={{
                 fill: "#94a3b8",
                 fontSize: 13,
@@ -203,7 +226,11 @@ export default function RevenueChart({
                 stroke: "#06b6d4",
                 strokeWidth: 2,
               }}
-              content={<CustomTooltip />}
+              content={(props) => (
+                <CustomTooltip
+                  {...props}
+                />
+              )}
             />
 
             <Area
@@ -212,12 +239,13 @@ export default function RevenueChart({
               stroke="#22d3ee"
               strokeWidth={4}
               fill="url(#revenueGradient)"
-              animationDuration={900}
+              animationDuration={700}
+              animationEasing="ease-out"
               activeDot={{
-                r: 8,
+                r: 7,
+                fill: "#fff",
                 stroke: "#22d3ee",
                 strokeWidth: 3,
-                fill: "#fff",
               }}
             />
           </AreaChart>

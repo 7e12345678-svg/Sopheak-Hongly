@@ -1,5 +1,4 @@
 "use client";
-
 import {
   ResponsiveContainer,
   BarChart,
@@ -8,7 +7,7 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  TooltipProps,
+ 
   Cell,
 } from "recharts";
 
@@ -33,11 +32,34 @@ const BAR_COLORS = [
   "#14b8a6",
 ];
 
+function CustomTooltip(props: any) {
+  const { active, payload, label } = props;
+
+  if (!active || !payload?.length) return null;
+
+  return (
+    <div className="rounded-2xl border border-cyan-500/30 bg-slate-900/95 px-5 py-4 shadow-2xl backdrop-blur-xl">
+      <p className="text-sm text-slate-400">
+        {label}
+      </p>
+
+      <h3 className="mt-2 text-2xl font-bold text-cyan-400">
+        {Number(payload[0].value)} Orders
+      </h3>
+
+      <p className="mt-1 text-xs text-slate-500">
+        Monthly completed orders
+      </p>
+    </div>
+  );
+}
+
 export default function OrdersChart({
   analytics,
 }: OrdersChartProps) {
 
-  const chartData = analytics.monthlyOrders;
+  const chartData =
+  analytics.monthlyOrders ?? [];
 
   const totalOrders = chartData.reduce(
     (sum, item) => sum + item.orders,
@@ -45,47 +67,16 @@ export default function OrdersChart({
   );
 
   const bestMonth =
-    chartData.reduce((prev, current) =>
-      prev.orders > current.orders
-        ? prev
-        : current
-    );
+  chartData.length === 0
+    ? { month: "-", orders: 0 }
+    : chartData.reduce((max, item) =>
+        item.orders > max.orders
+          ? item
+          : max
+      );
 
-  function CustomTooltip({
-    active,
-    payload,
-    label,
-  }: TooltipProps<number, string>) {
-    if (!active || !payload?.length)
-      return null;
-
-    return (
-      <div
-        className="
-          rounded-2xl
-          border
-          border-cyan-500/30
-          bg-slate-900/95
-          px-5
-          py-4
-          shadow-2xl
-          backdrop-blur-xl
-        "
-      >
-        <p className="text-sm text-slate-400">
-          {label}
-        </p>
-
-        <h3 className="mt-2 text-2xl font-bold text-cyan-400">
-          {payload[0].value} Orders
-        </h3>
-
-        <p className="mt-1 text-xs text-slate-500">
-          Monthly completed orders
-        </p>
-      </div>
-    );
-  }
+    
+    
        return (
     <div className="overflow-hidden rounded-3xl border border-slate-700 bg-slate-900/90 shadow-2xl">
       {/* Header */}
@@ -165,27 +156,26 @@ export default function OrdersChart({
             />
 
             <Tooltip
-              cursor={{
-                fill: "rgba(6,182,212,.08)",
-              }}
-              content={<CustomTooltip />}
-            />
+  content={(props) => (
+    <CustomTooltip {...props} />
+  )}
+/>
 
             <Bar
-              dataKey="orders"
+  dataKey="orders"
+  maxBarSize={45}
               radius={[10, 10, 0, 0]}
-              animationDuration={900}
+              animationDuration={700}
+animationEasing="ease-out"
             >
-              {chartData.map((_, index) => (
-                <Cell
-                  key={index}
-                  fill={
-                    BAR_COLORS[
-                      index % BAR_COLORS.length
-                    ]
-                  }
-                />
-              ))}
+              {chartData.map((item, index) => (
+  <Cell
+    key={item.month}
+    fill={
+      BAR_COLORS[index % BAR_COLORS.length]
+    }
+  />
+))}
             </Bar>
           </BarChart>
         </ResponsiveContainer>

@@ -1,6 +1,5 @@
 "use client";
 
-import type { Analytics } from "@/types";
 
 import {
   PieChart,
@@ -44,7 +43,7 @@ export default function PaymentChart({
         Payment Methods
       </h2>
 
-      <div className="h-[420px]">
+      <div className="relative h-[420px]">
   <ResponsiveContainer width="100%" height="100%">
     <PieChart>
       <Pie
@@ -66,8 +65,27 @@ export default function PaymentChart({
         ))}
       </Pie>
 
-      <Tooltip />
-      <Legend verticalAlign="bottom" />
+      <Tooltip
+  contentStyle={{
+    background: "#0f172a",
+    border: "1px solid #155e75",
+    borderRadius: "14px",
+  }}
+  labelStyle={{
+    color: "#22d3ee",
+  }}
+  itemStyle={{
+    color: "#ffffff",
+  }}
+/>
+      <Legend
+  verticalAlign="bottom"
+  iconType="circle"
+  wrapperStyle={{
+    color: "#cbd5e1",
+    paddingTop: 20,
+  }}
+/>
     </PieChart>
   </ResponsiveContainer>
 </div>

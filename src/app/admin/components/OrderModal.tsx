@@ -4,6 +4,14 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import type { Order } from "../../../hooks/useOrders";
+import { useEffect } from "react";
+import { X } from "lucide-react";
+import {
+  CheckCircle,
+  Trash2,
+} from "lucide-react";
+
+
 
 interface Props {
   order: Order | null;
@@ -20,35 +28,67 @@ export default function OrderModal({
   onDelete,
   onZoom,
 }: Props) {
-  if (!order) return null;
+ 
+
+  useEffect(() => {
+  if (!order) return;
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Escape") {
+      onClose();
+    }
+  };
+
+  window.addEventListener("keydown", handleKeyDown);
+
+  return () => {
+    window.removeEventListener("keydown", handleKeyDown);
+  };
+}, [order, onClose]);
+
+if (!order) return null;
 
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/70 flex justify-center items-center z-50"
-      >
+      
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  exit={{ opacity: 0 }}
+  onClick={onClose}
+  className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+>
         <motion.div
-          initial={{ scale: 0.8, opacity: 0, y: 50 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ scale: 0.8, opacity: 0, y: 50 }}
-          transition={{ duration: 0.3 }}
-          className="bg-slate-900 rounded-2xl border border-slate-700 p-8 w-full max-w-4xl"
-        >
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold text-cyan-400">
-              Order Details
-            </h2>
+  onClick={(e) => e.stopPropagation()}
+  initial={{ scale: 0.8, opacity: 0, y: 50 }}
+  animate={{ scale: 1, opacity: 1, y: 0 }}
+  exit={{ scale: 0.8, opacity: 0, y: 50 }}
+  transition={{ duration: 0.3 }}
+  className="
+w-full
+max-w-4xl
+max-h-[90vh]
+overflow-y-auto
+rounded-2xl
+border
+border-slate-700
+bg-slate-900
+p-8
+"
+>
+          <div className="mb-8 flex items-center justify-between">
+  <h2 className="text-3xl font-bold text-cyan-400">
+    Order Details
+  </h2>
 
-            <button
-              onClick={onClose}
-              className="text-red-400 text-3xl"
-            >
-              ✕
-            </button>
-          </div>
+  <button
+    onClick={onClose}
+    aria-label="Close"
+    className="rounded-xl p-2 text-slate-400 transition hover:bg-slate-800 hover:text-red-400"
+  >
+    <X size={24} />
+  </button>
+</div>
 
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-4">
@@ -107,14 +147,36 @@ export default function OrderModal({
               <p>
                 <b>Status :</b>{" "}
                 <span
-                  className={
-                    order.status === "Completed"
-                      ? "text-green-400"
-                      : "text-yellow-400"
-                  }
-                >
-                  {order.status}
-                </span>
+  className={`
+    inline-flex
+    items-center
+    gap-2
+    rounded-full
+    px-3
+    py-1
+    text-xs
+    font-semibold
+    ${
+      order.status === "Completed"
+        ? "bg-green-500/20 text-green-400"
+        : "bg-yellow-500/20 text-yellow-400"
+    }
+  `}
+>
+  <span
+    className={`
+      h-2
+      w-2
+      rounded-full
+      ${
+        order.status === "Completed"
+          ? "bg-green-400"
+          : "bg-yellow-400"
+      }
+    `}
+  />
+  {order.status}
+</span>
               </p>
 
             </div>
@@ -123,13 +185,26 @@ export default function OrderModal({
 
               {order.screenshot ? (
                 <Image
-                  src={order.screenshot}
-                  alt="Screenshot"
-                  width={250}
-                  height={250}
-                  onClick={onZoom}
-                  className="cursor-pointer rounded-xl hover:scale-105 transition"
-                />
+  src={order.screenshot}
+  alt="Payment Screenshot"
+  width={320}
+  height={320}
+  loading="lazy"
+  onClick={onZoom}
+  className="
+    h-[320px]
+    w-full
+    max-w-[320px]
+    rounded-2xl
+    object-cover
+    cursor-zoom-in
+    transition-all
+    duration-300
+    hover:scale-105
+    hover:shadow-2xl
+    hover:shadow-cyan-500/20
+  "
+/>
               ) : (
                 <p>No Screenshot</p>
               )}
@@ -140,26 +215,32 @@ export default function OrderModal({
           <div className="flex gap-4 mt-8">
 
             <button
-              disabled={order.status === "Completed"}
-              onClick={() => onConfirm(order._id)}
-              className={`flex-1 py-3 rounded-xl font-bold ${
-                order.status === "Completed"
-                  ? "bg-gray-600 cursor-not-allowed"
-                  : "bg-green-600 hover:bg-green-500"
-              }`}
-            >
-              {order.status === "Completed"
-                ? "✅ Confirmed"
-                : "✅ Confirm"}
-            </button>
+  disabled={order.status === "Completed"}
+  onClick={() => onConfirm(order._id)}
+  className={`
+    flex
+    flex-1
+    items-center
+    justify-center
+    gap-2
+    rounded-xl
+    py-3
+    font-bold
+    transition
+    ${
+      order.status === "Completed"
+        ? "cursor-not-allowed bg-slate-600"
+        : "bg-green-600 hover:bg-green-500"
+    }
+  `}
+>
+  <CheckCircle size={18} />
+  {order.status === "Completed"
+    ? "Confirmed"
+    : "Confirm"}
+</button>
 
-            <button
-              onClick={() => onDelete(order._id)}
-              className="flex-1 py-3 rounded-xl bg-red-600 hover:bg-red-500 font-bold"
-            >
-              🗑 Delete
-            </button>
-
+        
           </div>
 
         </motion.div>
