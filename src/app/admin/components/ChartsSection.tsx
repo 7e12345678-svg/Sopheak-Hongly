@@ -18,6 +18,7 @@ interface Order {
   screenshot?: string;
   status: string;
   createdAt: string;
+  price: number;
 }
 
 interface Props {
@@ -31,8 +32,8 @@ export default function ChartsSection({
 }: Props) {
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
-
+      {/* Row 1 */}
+      <div className="mb-10 grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <RevenueChart orders={orders} />
         </div>
@@ -40,21 +41,19 @@ export default function ChartsSection({
         <div>
           <PaymentChart orders={orders} />
         </div>
-
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
-
+      {/* Row 2 */}
+      <div className="mb-10 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <GameChart orders={orders} />
 
         <TopCustomerCard
-          
-  customer={String(topCustomer[0])}
-  total={Number(topCustomer[1])}
-/>
-
+          customer={topCustomer?.[0] ?? "-"}
+          total={topCustomer?.[1] ?? 0}
+        />
       </div>
 
+      {/* Row 3 */}
       <RecentActivity />
     </>
   );
