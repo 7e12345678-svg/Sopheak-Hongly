@@ -6,10 +6,48 @@ import Game from "@/models/Game";
 // Get Packages API
 // =========================
 export async function GET() {
-  return NextResponse.json({
-    success: true,
-    message: "Packages API",
-  });
+  try {
+    await connectDB();
+
+    const games = await Game.find(
+      { status: true },
+      {
+        name: 1,
+        slug: 1,
+        image: 1,
+        packages: 1,
+      }
+    ).lean();
+
+    const packages = games.flatMap((game: any) =>
+      (game.packages || []).map((pkg: any) => ({
+        _id: pkg._id,
+        gameId: game._id,
+        gameName: game.name,
+        gameSlug: game.slug,
+        gameImage: game.image,
+        name: pkg.name,
+        price: pkg.price,
+      }))
+    );
+
+    return NextResponse.json({
+      success: true,
+      packages,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Failed to fetch packages",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
 }
 
 // =========================

@@ -1,4 +1,5 @@
 "use client";
+
 import {
   ResponsiveContainer,
   BarChart,
@@ -7,14 +8,13 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
- 
   Cell,
 } from "recharts";
 
-import type { Analytics } from "@/types";
+import type { Order } from "@/types";
 
 interface OrdersChartProps {
-  analytics: Analytics;
+  orders: Order[];
 }
 
 const BAR_COLORS = [
@@ -23,13 +23,6 @@ const BAR_COLORS = [
   "#0ea5e9",
   "#38bdf8",
   "#22d3ee",
-  "#14b8a6",
-  "#06b6d4",
-  "#0891b2",
-  "#0ea5e9",
-  "#38bdf8",
-  "#22d3ee",
-  "#14b8a6",
 ];
 
 function CustomTooltip(props: any) {
@@ -38,64 +31,84 @@ function CustomTooltip(props: any) {
   if (!active || !payload?.length) return null;
 
   return (
-    <div className="rounded-2xl border border-cyan-500/30 bg-slate-900/95 px-5 py-4 shadow-2xl backdrop-blur-xl">
-      <p className="text-sm text-slate-400">
-        {label}
-      </p>
+    <div className="rounded-xl border border-cyan-500/30 bg-slate-900 p-4">
+      <p className="text-slate-400">Day {label}</p>
 
-      <h3 className="mt-2 text-2xl font-bold text-cyan-400">
-        {Number(payload[0].value)} Orders
+      <h3 className="text-xl font-bold text-cyan-400">
+        {payload[0].value} Orders
       </h3>
-
-      <p className="mt-1 text-xs text-slate-500">
-        Monthly completed orders
-      </p>
     </div>
   );
 }
 
 export default function OrdersChart({
-  analytics,
+  orders,
 }: OrdersChartProps) {
 
-  const chartData =
-  analytics.monthlyOrders ?? [];
+  const today = new Date();
 
-  const totalOrders = chartData.reduce(
-    (sum, item) => sum + item.orders,
+  const year = today.getFullYear();
+  const month = today.getMonth();
+
+  const daysInMonth = new Date(
+    year,
+    month + 1,
+    0
+  ).getDate();
+
+  const ordersByDay = Array(daysInMonth).fill(0);
+
+  orders.forEach((order) => {
+
+    const date = new Date(order.createdAt);
+
+    if (
+      date.getFullYear() !== year ||
+      date.getMonth() !== month
+    ) {
+      return;
+    }
+
+    const day = date.getDate() - 1;
+
+    ordersByDay[day]++;
+  });
+
+  const chartData = ordersByDay.map((count, index) => ({
+    day: index + 1,
+    orders: count,
+  }));
+
+  const totalOrders = ordersByDay.reduce(
+    (a, b) => a + b,
     0
   );
 
-  const bestMonth =
-  chartData.length === 0
-    ? { month: "-", orders: 0 }
-    : chartData.reduce((max, item) =>
-        item.orders > max.orders
-          ? item
-          : max
-      );
+  const bestDay =
+    chartData.reduce((max, item) =>
+      item.orders > max.orders ? item : max
+    );
 
-    
-    
-       return (
-    <div className="overflow-hidden rounded-3xl border border-slate-700 bg-slate-900/90 shadow-2xl">
-      {/* Header */}
-      <div className="flex flex-col gap-5 border-b border-slate-800 p-6 lg:flex-row lg:items-center lg:justify-between">
+  return (
+    <div className="overflow-hidden rounded-3xl border border-slate-700 bg-slate-900">
+      <div className="flex justify-between border-b border-slate-800 p-6">
+
         <div>
-          <p className="text-sm uppercase tracking-[0.25em] text-cyan-400">
+          <p className="uppercase tracking-[4px] text-cyan-400 text-sm">
             Analytics
           </p>
 
-          <h2 className="mt-2 text-3xl font-bold text-white">
-            Orders Overview
+          <h2 className="text-3xl font-bold text-white">
+            Daily Orders
           </h2>
 
-          <p className="mt-2 text-slate-400">
-            Monthly completed orders
+          <p className="text-slate-400 mt-2">
+            Orders for each day of this month
           </p>
         </div>
 
         <div className="flex gap-4">
+
           <div className="rounded-2xl bg-slate-800 px-5 py-4">
             <p className="text-xs text-slate-400">
               Total Orders
@@ -108,28 +121,24 @@ export default function OrdersChart({
 
           <div className="rounded-2xl bg-cyan-500/10 px-5 py-4">
             <p className="text-xs text-slate-400">
-              Best Month
+              Best Day
             </p>
 
             <h3 className="mt-2 text-2xl font-bold text-cyan-400">
-              {bestMonth.month}
+              {bestDay.day}
             </h3>
           </div>
+
         </div>
+
       </div>
 
-      {/* Chart */}
       <div className="h-[420px] p-6">
+
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={chartData}
-            margin={{
-              top: 20,
-              right: 10,
-              left: 0,
-              bottom: 0,
-            }}
-          >
+
+          <BarChart data={chartData}>
+
             <CartesianGrid
               stroke="#1e293b"
               strokeDasharray="4 4"
@@ -137,49 +146,46 @@ export default function OrdersChart({
             />
 
             <XAxis
-              dataKey="month"
-              tick={{
-                fill: "#94a3b8",
-                fontSize: 13,
-              }}
-              tickLine={false}
+              dataKey="day"
+              tick={{ fill: "#94a3b8" }}
               axisLine={false}
+              tickLine={false}
             />
 
             <YAxis
-              tick={{
-                fill: "#94a3b8",
-                fontSize: 13,
-              }}
-              tickLine={false}
+              tick={{ fill: "#94a3b8" }}
               axisLine={false}
+              tickLine={false}
             />
 
             <Tooltip
-  content={(props) => (
-    <CustomTooltip {...props} />
-  )}
-/>
+              content={(props) => (
+                <CustomTooltip {...props} />
+              )}
+            />
 
             <Bar
-  dataKey="orders"
-  maxBarSize={45}
+              dataKey="orders"
               radius={[10, 10, 0, 0]}
-              animationDuration={700}
-animationEasing="ease-out"
             >
               {chartData.map((item, index) => (
-  <Cell
-    key={item.month}
-    fill={
-      BAR_COLORS[index % BAR_COLORS.length]
-    }
-  />
-))}
+                <Cell
+                  key={item.day}
+                  fill={
+                    BAR_COLORS[
+                      index % BAR_COLORS.length
+                    ]
+                  }
+                />
+              ))}
             </Bar>
+
           </BarChart>
+
         </ResponsiveContainer>
+
       </div>
+
     </div>
   );
 }

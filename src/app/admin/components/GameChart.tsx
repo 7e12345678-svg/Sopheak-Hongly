@@ -8,6 +8,7 @@ import {
   YAxis,
   Tooltip,
   CartesianGrid,
+  Cell,
 } from "recharts";
 
 type GameChartProps = {
@@ -16,73 +17,121 @@ type GameChartProps = {
   }[];
 };
 
+const COLORS = [
+  "#06b6d4",
+  "#0891b2",
+  "#22d3ee",
+  "#38bdf8",
+  "#0ea5e9",
+  "#14b8a6",
+];
+
+const gameLabels: Record<string, string> = {
+  "Mobile Legends": "MLBB",
+  MLBB: "MLBB",
+
+  "PUBG Mobile": "PUBG",
+  PUBG: "PUBG",
+
+  "Free Fire": "FF",
+  FF: "FF",
+
+  Roblox: "Roblox",
+};
+
 export default function GameChart({
   orders,
 }: GameChartProps) {
+  const gameCounts: Record<string, number> = {};
 
-  const games = [
-    "Mobile Legends",
-    "PUBG Mobile",
-    "Free Fire",
-    "Roblox",
-  ];
+  orders.forEach((order) => {
+    const label =
+      gameLabels[order.game] ?? order.game;
 
-  const data = games.map((game) => ({
-    game:
-      game === "Mobile Legends"
-        ? "MLBB"
-        : game === "PUBG Mobile"
-        ? "PUBG"
-        : game === "Free Fire"
-        ? "FF"
-        : "Roblox",
+    gameCounts[label] =
+      (gameCounts[label] || 0) + 1;
+  });
 
-    orders: orders.filter(
-      (order) => order.game === game
-    ).length,
-  }));
+  const data = Object.entries(gameCounts)
+    .map(([game, orders]) => ({
+      game,
+      orders,
+    }))
+    .sort((a, b) => b.orders - a.orders);
 
   return (
-    <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6">
+    <div className="rounded-2xl border border-slate-700 bg-slate-900 p-6">
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <p className="text-sm uppercase tracking-[4px] text-cyan-400">
+            Analytics
+          </p>
 
-      <h2 className="text-2xl font-bold text-cyan-400 mb-6">
-        Orders by Game
-      </h2>
+          <h2 className="text-3xl font-bold text-white">
+            Orders by Game
+          </h2>
+
+          <p className="mt-2 text-slate-400">
+            Number of orders for each game
+          </p>
+        </div>
+
+        <div className="rounded-xl bg-cyan-500/10 px-4 py-3">
+          <p className="text-xs text-slate-400">
+            Total Orders
+          </p>
+
+          <h3 className="mt-1 text-2xl font-bold text-cyan-400">
+            {orders.length}
+          </h3>
+        </div>
+      </div>
 
       <div className="h-[350px]">
-
-        <ResponsiveContainer width="100%" height="100%">
-
+        <ResponsiveContainer
+          width="100%"
+          height="100%"
+        >
           <BarChart data={data}>
-
             <CartesianGrid
-              strokeDasharray="3 3"
               stroke="#334155"
+              strokeDasharray="4 4"
+              vertical={false}
             />
 
             <XAxis
               dataKey="game"
-              stroke="#94a3b8"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#94a3b8" }}
             />
 
             <YAxis
-              stroke="#94a3b8"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#94a3b8" }}
             />
 
             <Tooltip />
 
             <Bar
               dataKey="orders"
-              fill="#06b6d4"
-              radius={[8, 8, 0, 0]}
-            />
-
+              radius={[10, 10, 0, 0]}
+            >
+              {data.map((item, index) => (
+                <Cell
+                  key={item.game}
+                  fill={
+                    COLORS[
+                      index % COLORS.length
+                    ]
+                  }
+                />
+              ))}
+            </Bar>
           </BarChart>
-
         </ResponsiveContainer>
-
       </div>
-
     </div>
   );
 }

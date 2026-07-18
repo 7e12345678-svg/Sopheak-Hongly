@@ -111,7 +111,7 @@ export default function AnalyticsPage() {
         {/* Revenue + Orders */}
         <div className="mt-10 grid gap-8 xl:grid-cols-2">
           <RevenueChart orders={orders} />
-          <OrdersChart analytics={analytics} />
+          <OrdersChart orders={orders} />
         </div>
 
         {/* Payment + Top Games */}

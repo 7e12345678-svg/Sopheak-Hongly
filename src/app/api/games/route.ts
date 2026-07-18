@@ -12,7 +12,9 @@ export async function GET() {
   try {
     await connectDB();
 
-    const games = await Game.find().sort({
+    const games = await Game.find({
+  status: true,
+}).sort({
   featured: -1,
   sortOrder: 1,
   createdAt: -1,

@@ -15,21 +15,7 @@ export default function TopUpContent() {
   const [methods, setMethods] = useState<any[]>([]);
 
   const game = searchParams.get("game");
-  useEffect(() => {
-  async function fetchMethods() {
-    const data = await getPaymentMethods();
-
-    if (data.success) {
-      setMethods(
-        data.methods.filter(
-          (m: any) => m.enabled
-        )
-      );
-    }
-  }
-
-  fetchMethods();
-}, []);
+  
 
   const {
     payment,
@@ -57,6 +43,50 @@ export default function TopUpContent() {
 
     router,
   } = useTopUp(game);
+
+  useEffect(() => {
+  async function fetchMethods() {
+    try {
+      const methods = await getPaymentMethods();
+
+      setMethods(methods);
+
+      // Default selected payment
+      if (methods.length > 0 && !payment) {
+        setPayment(methods[0].name);
+      }
+    } catch (error) {
+      console.error("Failed to load payment methods:", error);
+    }
+  }
+
+  fetchMethods();
+}, [payment, setPayment]);
+
+  const getPackageIcon = () => {
+  switch (gameData?.name?.toLowerCase()) {
+    case "mobile legend":
+    case "mobile legends":
+      return "/images/mlbb.png";
+
+    case "free fire":
+      return "/images/freefire.png";
+
+    case "pubg":
+    case "pubg mobile":
+      return "/images/uc.png";
+
+    case "roblox":
+      return "/images/robux.png"; // ឬ robux.png បើអ្នក rename
+
+    default:
+      return "/images/mlbb.png";
+  }
+};
+
+  console.log("methods =", methods);
+console.log("payment =", payment);
+console.log("selected =", methods.find((m) => m.name === payment));
 
   return (
     <main className="min-h-screen bg-slate-950 text-white py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
@@ -179,7 +209,11 @@ export default function TopUpContent() {
     {/* Packages */}
     <div className="mb-8">
       <label className="block text-lg font-bold text-cyan-400 mb-4">
-        💎 Top Up Amount
+        {gameData?.name === "PUBG Mobile"
+  ? "🪙 UC Top Up"
+  : gameData?.name === "Roblox"
+  ? "🟢 Robux Top Up"
+  : "💎 Diamond Top Up"}
       </label>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -205,7 +239,15 @@ export default function TopUpContent() {
                   : "bg-slate-800 border-slate-700 hover:border-cyan-400"
               }`}
             >
-              <div className="text-4xl">💎</div>
+              <div className="mb-3 flex justify-center">
+  <Image
+    src={getPackageIcon()}
+    alt={gameData?.name || "Package"}
+    width={56}
+    height={56}
+    className="object-contain"
+  />
+</div>
 
               <h3 className="mt-2 font-bold">
                 {item.name}
@@ -241,13 +283,13 @@ export default function TopUpContent() {
               }`}
             >
               <div className="flex flex-col items-center gap-2">
-                <Image
-                  src={method.logo}
-                  alt={method.name}
-                  width={50}
-                  height={50}
-                  className="rounded-lg"
-                />
+                <img
+  src={method.logo}
+  alt={method.name}
+  width={50}
+  height={50}
+  className="rounded-lg object-contain"
+/>
 
                 <span className="font-semibold">
                   {method.name}
@@ -306,17 +348,15 @@ export default function TopUpContent() {
         Scan this QR Code before submitting your order.
       </p>
 
-      <Image
-        src={
-  methods.find(
-    (m) => m.name === payment
-  )?.qr || "/images/no-qr.png"
-}
-        alt={payment}
-        width={220}
-        height={220}
-        className="mx-auto rounded-xl"
-      />
+      <img
+  src={
+    methods.find((m) => m.name === payment)?.qr ||
+    "/images/no-qr.png"
+  }
+  alt={payment}
+  width={220}
+  className="mx-auto rounded-xl"
+/>
     </div>
 
         {/* Submit Button */}

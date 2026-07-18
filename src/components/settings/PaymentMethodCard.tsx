@@ -3,8 +3,11 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-import { PaymentMethod } from "@/hooks/usePaymentMethods";
-import { updatePaymentMethod } from "@/services/paymentMethods";
+import {
+  PaymentMethod,
+  updatePaymentMethod,
+} from "@/services/paymentMethods";
+
 
 import LogoUploader from "./LogoUploader";
 import QRUploader from "./QRUploader";

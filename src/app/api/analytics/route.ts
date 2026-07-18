@@ -62,7 +62,7 @@ export async function GET() {
       ABA: 0,
       ACLEDA: 0,
       Wing: 0,
-      TrueMoney: 0,
+      AMK: 0,
     };
 
     orders.forEach((order) => {

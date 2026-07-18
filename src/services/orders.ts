@@ -1,30 +1,45 @@
 import { Order } from "@/hooks/useOrders";
 
+// ===============================
+// Admin Orders
+// ===============================
 export async function getOrders(): Promise<Order[]> {
   const res = await fetch("/api/orders", {
-  cache: "no-store",
-  credentials: "include",
-});
+    cache: "no-store",
+    credentials: "include",
+  });
 
   if (!res.ok) {
     console.error("HTTP Error:", res.status);
     return [];
   }
 
-  const text = await res.text();
-
-  console.log("Response:", text);
-
-  if (!text) {
-    console.error("Empty response");
-    return [];
-  }
-
-  const data = JSON.parse(text);
+  const data = await res.json();
 
   return data.success ? data.orders : [];
 }
 
+// ===============================
+// Homepage Live Orders
+// ===============================
+export async function getLiveOrders() {
+  const res = await fetch("/api/orders/live", {
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    console.error("HTTP Error:", res.status);
+    return [];
+  }
+
+  const data = await res.json();
+
+  return data.success ? data.orders : [];
+}
+
+// ===============================
+// Update Order
+// ===============================
 export async function updateOrder(
   id: string,
   status: string
@@ -40,9 +55,10 @@ export async function updateOrder(
   return res.json();
 }
 
-export async function deleteOrder(
-  id: string
-) {
+// ===============================
+// Delete Order
+// ===============================
+export async function deleteOrder(id: string) {
   const res = await fetch(`/api/orders/${id}`, {
     method: "DELETE",
   });
@@ -50,6 +66,9 @@ export async function deleteOrder(
   return res.json();
 }
 
+// ===============================
+// Create Order
+// ===============================
 export async function createOrder(form: FormData) {
   const res = await fetch("/api/orders", {
     method: "POST",

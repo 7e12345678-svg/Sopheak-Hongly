@@ -30,7 +30,54 @@ export async function GET() {
           package: 1,
           status: 1,
           createdAt: 1,
-          image: "$gameInfo.image",
+          image: {
+  $ifNull: [
+    "$gameInfo.image",
+    {
+      $switch: {
+        branches: [
+          {
+            case: {
+              $regexMatch: {
+                input: { $toLower: "$game" },
+                regex: "pubg",
+              },
+            },
+            then: "/images/pubg.jpg",
+          },
+          {
+            case: {
+              $regexMatch: {
+                input: { $toLower: "$game" },
+                regex: "free",
+              },
+            },
+            then: "/images/freefire.png",
+          },
+          {
+            case: {
+              $regexMatch: {
+                input: { $toLower: "$game" },
+                regex: "mobile legend|mobile legends|mlbb",
+              },
+            },
+            then: "/images/mlbb.png",
+          },
+          {
+            case: {
+              $regexMatch: {
+                input: { $toLower: "$game" },
+                regex: "roblox",
+              },
+            },
+            then: "/images/roblox.jpg",
+          },
+        ],
+        default: "/images/logo.png",
+      },
+    },
+  ],
+},
         },
       },
       {

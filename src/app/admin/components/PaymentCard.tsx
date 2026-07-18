@@ -8,7 +8,7 @@ const paymentImages: Record<string, string> = {
   ABA: "/images/aba.jpg",
   ACLEDA: "/images/acleda.jpg",
   Wing: "/images/wing.jpg",
-  TrueMoney: "/images/truemoney.jpg",
+  AMK: "/images/AMK.jpg",
 };
 
 export default function PaymentCard({

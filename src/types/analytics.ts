@@ -20,7 +20,7 @@ export interface Analytics {
 
     Wing: number;
 
-    TrueMoney: number;
+    AMK: number;
   };
 
   topGames: {

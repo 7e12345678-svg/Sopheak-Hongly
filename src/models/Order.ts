@@ -10,7 +10,15 @@ export interface IOrder extends Document {
   payment: string;
   phone: string;
   screenshot: string;
-  status: "Pending" | "Completed";
+
+  trackingCode: string;
+
+  status:
+    | "Pending"
+    | "Processing"
+    | "Completed"
+    | "Cancelled";
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -62,9 +70,20 @@ const OrderSchema = new Schema<IOrder>(
       default: "",
     },
 
+    trackingCode: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+
     status: {
       type: String,
-      enum: ["Pending", "Completed"],
+      enum: [
+        "Pending",
+        "Processing",
+        "Completed",
+        "Cancelled",
+      ],
       default: "Pending",
     },
   },

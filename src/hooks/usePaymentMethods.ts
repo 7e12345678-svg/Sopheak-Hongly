@@ -1,17 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getPaymentMethods } from "@/services/paymentMethods";
-
-export interface PaymentMethod {
-  _id: string;
-  name: string;
-  logo: string;
-  qr: string;
-  accountName: string;
-  accountNumber: string;
-  enabled: boolean;
-}
+import {
+  getPaymentMethods,
+  PaymentMethod,
+} from "@/services/paymentMethods";
 
 export default function usePaymentMethods() {
   const [methods, setMethods] = useState<PaymentMethod[]>([]);
@@ -19,13 +12,15 @@ export default function usePaymentMethods() {
 
   useEffect(() => {
     async function load() {
-      const data = await getPaymentMethods();
+      try {
+        const data = await getPaymentMethods();
 
-      if (data.success) {
-        setMethods(data.methods);
+        setMethods(data);
+      } catch (error) {
+        console.error("Failed to load payment methods:", error);
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     }
 
     load();

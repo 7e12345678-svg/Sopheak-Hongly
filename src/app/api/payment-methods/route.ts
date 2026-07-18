@@ -7,9 +7,19 @@ export async function GET() {
   try {
     await connectDB();
 
-    const methods = await PaymentMethod.find().sort({
-      name: 1,
-    });
+    const methods = await PaymentMethod.find(
+  {},
+  {
+    name: 1,
+    logo: 1,
+    qr: 1,
+    accountName: 1,
+    accountNumber: 1,
+    enabled: 1,
+  }
+).sort({
+  name: 1,
+});
 
     return NextResponse.json({
       success: true,

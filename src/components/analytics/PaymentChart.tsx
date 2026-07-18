@@ -44,8 +44,9 @@ export default function PaymentChart({
       value: analytics.paymentMethods.Wing,
     },
     {
-      name: "TrueMoney",
-      value: analytics.paymentMethods.TrueMoney,
+      name: "AMK",
+    value: analytics.paymentMethods.AMK,
+    color: "#a855f7",
     },
   ];
 
