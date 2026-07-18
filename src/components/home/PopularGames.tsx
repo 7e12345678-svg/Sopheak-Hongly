@@ -11,7 +11,7 @@ const games = [
     image: "/images/mlbb.jpg",
     players: "12M+",
     color: "from-blue-500 to-cyan-500",
-    href: "/topup?game=mobile-legends",
+    href: "/topup?game=mobile-legend",
   },
   {
     name: "PUBG Mobile",
@@ -51,7 +51,7 @@ export default function PopularGames() {
   transition={{ duration: 0.7 }}
   className="mx-auto max-w-3xl text-center"
 >
-          <span className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-6 py-3 text-cyan-400">
+          <span className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2 py-1 text-[10px] sm:px-4 sm:py-2 sm:text-sm text-cyan-400">
     <Flame size={18}/>
     Popular Games
 </span>
@@ -67,7 +67,17 @@ export default function PopularGames() {
         </motion.div>
 
         {/* Games */}
-        <div className="mt-20 grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-4">
+        <div
+  className="
+    mt-20
+    grid
+    grid-cols-3
+    gap-3
+    sm:gap-4
+    md:grid-cols-2
+    xl:grid-cols-4
+  "
+>
           {games.map((game, index) => (
             <motion.div
               key={game.name}
@@ -80,7 +90,16 @@ export default function PopularGames() {
               <Link href={game.href} className="block">
                 <div className="group relative overflow-hidden rounded-3xl border border-cyan-500/20 bg-white/5 backdrop-blur-xl transition-all duration-300 hover:border-cyan-400 hover:shadow-[0_0_60px_rgba(34,211,238,.45)]">
                   {/* Image */}
-                  <div className="relative h-80 overflow-hidden">
+                  <div
+  className="
+    relative
+    h-32
+    sm:h-44
+    md:h-64
+    xl:h-80
+    overflow-hidden
+  "
+>
                     <Image
                       src={game.image}
                       alt={game.name}
@@ -100,19 +119,43 @@ export default function PopularGames() {
                     </div>
 
                     <div className="absolute bottom-5 left-5">
-                      <h3 className="text-2xl font-black text-white">
+                      <h3
+  className="
+    text-xs
+    sm:text-base
+    md:text-xl
+    xl:text-2xl
+    font-black
+    text-white
+  "
+>
                         {game.name}
                       </h3>
 
-                      <p className="mt-2 text-cyan-300">
+                      <p
+ className="
+ mt-1
+ text-[10px]
+ sm:text-xs
+ text-cyan-300
+ "
+>
                         {game.players} Players
                       </p>
                     </div>
                   </div>
 
                   {/* Footer */}
-                  <div className="flex items-center justify-between p-6">
-                    <span className="rounded-xl bg-cyan-500 px-6 py-3 font-bold text-black transition-all duration-300 group-hover:bg-cyan-400 group-hover:shadow-[0_0_30px_rgba(34,211,238,.6)]">
+                  <div
+ className="
+ flex
+ items-center
+ justify-between
+ p-2
+ sm:p-4
+ "
+>
+                    <span className="rounded-xl bg-cyan-500 px-2 py-1 text-[10px] sm:px-4 sm:py-2 sm:text-sm font-bold text-black transition-all duration-300 group-hover:bg-cyan-400 group-hover:shadow-[0_0_30px_rgba(34,211,238,.6)]">
                       Top Up
                     </span>
 

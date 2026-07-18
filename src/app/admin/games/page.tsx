@@ -3,10 +3,10 @@
 
 import { toast } from "react-hot-toast";
 
-import AddGameModal from "@/app/components/games/AddGameModal";
-import EditGameModal from "@/app/components/games/EditGameModal";
-import GameTable from "@/app/components/games/GameTable";
-import GameStats from "@/app/components/games/GameStats";
+import AddGameModal from "@/components/games/AddGameModal";
+import EditGameModal from "@/components/games/EditGameModal";
+import GameTable from "@/components/games/GameTable";
+import GameStats from "@/components/games/GameStats";
 
 import { useCallback, useEffect, useState } from "react";
 import type { Game } from "@/types";

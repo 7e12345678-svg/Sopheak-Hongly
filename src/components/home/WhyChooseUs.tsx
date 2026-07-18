@@ -65,7 +65,17 @@ export default function WhyChooseUs() {
         </motion.div>
 
         {/* Cards */}
-        <div className="mt-20 grid gap-8 md:grid-cols-2 xl:grid-cols-4">
+        <div
+  className="
+    mt-20
+    grid
+    grid-cols-3
+    gap-3
+    sm:gap-5
+    md:grid-cols-2
+    xl:grid-cols-4
+  "
+>
           {features.map((item, index) => {
             const Icon = item.icon;
 
@@ -86,7 +96,7 @@ export default function WhyChooseUs() {
                 border
                 border-cyan-500/20
                 bg-slate-900/70
-                p-8
+                p-3 sm:p-6
                 backdrop-blur-xl
                 transition-all
                 duration-300
@@ -98,7 +108,7 @@ export default function WhyChooseUs() {
                   <Icon size={34} />
                 </div>
 
-                <h3 className="mt-8 text-2xl font-bold text-white">
+                <h3 className="mt-8 text-sm sm:text-xl font-bold text-white">
                   {item.title}
                 </h3>
 
