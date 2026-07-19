@@ -12,6 +12,36 @@ interface AnalyticsOrder {
   createdAt: Date | string;
 }
 
+function normalizeGameName(game: string) {
+  const value = game.trim().toLowerCase();
+
+  if (
+    value.includes("mobile") ||
+    value.includes("legend") ||
+    value === "ml" ||
+    value === "mlbb"
+  ) {
+    return "Mobile Legends";
+  }
+
+  if (value.includes("pubg")) {
+    return "PUBG Mobile";
+  }
+
+  if (
+    value.includes("free") ||
+    value === "ff"
+  ) {
+    return "Free Fire";
+  }
+
+  if (value.includes("roblox")) {
+    return "Roblox";
+  }
+
+  return "";
+}
+
 export async function GET() {
   try {
     await connectDB();
@@ -39,11 +69,9 @@ export async function GET() {
     // Customers
     // ===========================
 
-    const uniqueCustomers = new Set(
+    const totalCustomers = new Set(
       orders.map((order) => order.phone)
-    );
-
-    const totalCustomers = uniqueCustomers.size;
+    ).size;
 
     // ===========================
     // Revenue
@@ -66,34 +94,57 @@ export async function GET() {
     };
 
     orders.forEach((order) => {
-      const method =
-        order.payment as keyof typeof paymentMethods;
+      const payment = order.payment?.trim();
 
-      if (method in paymentMethods) {
-        paymentMethods[method]++;
+      if (
+        payment &&
+        payment in paymentMethods
+      ) {
+        paymentMethods[
+          payment as keyof typeof paymentMethods
+        ]++;
       }
     });
 
+   // ===========================
+// Top Games (Only 4 Games)
+// ===========================
+
+const gameMap = {
+  "Mobile Legends": 0,
+  "PUBG Mobile": 0,
+  "Free Fire": 0,
+  "Roblox": 0,
+};
+
+orders.forEach((order) => {
+  const game = normalizeGameName(order.game);
+
+  if (game in gameMap) {
+    gameMap[game as keyof typeof gameMap]++;
+  }
+});
+
+const topGames = [
+  {
+    name: "Mobile Legends",
+    orders: gameMap["Mobile Legends"],
+  },
+  {
+    name: "PUBG Mobile",
+    orders: gameMap["PUBG Mobile"],
+  },
+  {
+    name: "Free Fire",
+    orders: gameMap["Free Fire"],
+  },
+  {
+    name: "Roblox",
+    orders: gameMap["Roblox"],
+  },
+];
     // ===========================
-    // Top Games
-    // ===========================
-
-    const gameMap: Record<string, number> = {};
-
-    orders.forEach((order) => {
-      gameMap[order.game] =
-        (gameMap[order.game] || 0) + 1;
-    });
-
-    const topGames = Object.entries(gameMap)
-      .map(([name, count]) => ({
-        name,
-        orders: count,
-      }))
-      .sort((a, b) => b.orders - a.orders);
-
-    // ===========================
-    // Monthly Revenue
+    // Monthly Revenue / Orders
     // ===========================
 
     const monthNames = [
@@ -111,19 +162,15 @@ export async function GET() {
       "Dec",
     ];
 
-    const monthlyRevenue = monthNames.map(
-      (month) => ({
-        month,
-        revenue: 0,
-      })
-    );
+    const monthlyRevenue = monthNames.map((month) => ({
+      month,
+      revenue: 0,
+    }));
 
-    const monthlyOrders = monthNames.map(
-      (month) => ({
-        month,
-        orders: 0,
-      })
-    );
+    const monthlyOrders = monthNames.map((month) => ({
+      month,
+      orders: 0,
+    }));
 
     orders.forEach((order) => {
       const month = new Date(
@@ -154,6 +201,7 @@ export async function GET() {
       monthlyRevenue,
       monthlyOrders,
     });
+
   } catch (error) {
     console.error(error);
 

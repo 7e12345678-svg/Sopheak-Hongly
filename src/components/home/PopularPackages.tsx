@@ -2,28 +2,33 @@
 
 import { motion } from "framer-motion";
 import { Gem, Flame } from "lucide-react";
+import Link from "next/link";
 
 const packages = [
   {
     game: "Mobile Legends",
+    gameId: "mobile-legend",
     amount: "86 Diamonds",
     price: "$1.99",
     badge: "Best Seller",
   },
   {
     game: "PUBG Mobile",
+    gameId: "pubg-mobile",
     amount: "325 UC",
     price: "$4.99",
     badge: "Popular",
   },
   {
     game: "Free Fire",
+    gameId: "free-fire",
     amount: "530 Diamonds",
     price: "$5.49",
     badge: "Hot",
   },
   {
     game: "Roblox",
+    gameId: "roblox",
     amount: "800 Robux",
     price: "$9.99",
     badge: "Limited",
@@ -115,22 +120,25 @@ export default function PopularPackages() {
               </p>
 
               {/* Button */}
-              <button
-                className="
-                  mt-8
-                  w-full
-                  rounded-xl
-                  bg-cyan-500
-                  py-3
-                  font-bold
-                  text-black
-                  transition
-                  duration-300
-                  hover:bg-cyan-400
-                "
-              >
-                Buy Now
-              </button>
+              <Link
+  href={`/topup?game=${item.gameId}`}
+  className="
+    mt-8
+    block
+    w-full
+    rounded-xl
+    bg-cyan-500
+    py-3
+    text-center
+    font-bold
+    text-black
+    transition
+    duration-300
+    hover:bg-cyan-400
+  "
+>
+  Buy Now
+</Link>
             </motion.div>
           ))}
         </div>

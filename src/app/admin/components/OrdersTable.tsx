@@ -44,6 +44,36 @@ function getGameImage(game: string) {
   return "/images/default-game.jpg";
 }
 
+function normalizeGameName(game: string) {
+  const name = game.toLowerCase().trim();
+
+  if (
+    name.includes("mobile") &&
+    name.includes("legend") ||
+    name === "mlbb"
+  ) {
+    return "Mobile Legends";
+  }
+
+  if (name.includes("pubg")) {
+    return "PUBG Mobile";
+  }
+
+  if (
+    name.includes("free") ||
+    name.includes("ff")
+  ) {
+    return "Free Fire";
+  }
+
+  if (name.includes("roblox")) {
+    return "Roblox";
+  }
+
+  return game;
+}
+
+
 
 export default function OrdersTable({
   orders,
@@ -172,7 +202,7 @@ export default function OrdersTable({
           overflow-auto
         "
       >
-        <table className="min-w-full">
+        <table className="min-w-[1200px] table-fixed">
           <thead
             className="
               sticky
@@ -202,11 +232,11 @@ export default function OrdersTable({
                 />
               </th>
 
-              <th className="px-5 py-4">
+              <th className="w-[260px] px-5 py-4">
                 Game
               </th>
 
-              <th className="px-5 py-4">
+              <th className="w-[180px] px-5 py-4">
                 Player
               </th>
 
@@ -240,7 +270,8 @@ export default function OrdersTable({
             <tbody>
   {orders.map((order) => {
    
-  const gameImage = getGameImage(order.game);
+  const gameName = normalizeGameName(order.game);
+const gameImage = getGameImage(gameName);
 
     return (
       <tr
@@ -251,7 +282,7 @@ transition-all
 duration-300"
       >
         {/* Checkbox */}
-        <td className="px-5 py-4">
+        <td className="w-14 px-5 py-4">
           <input
             type="checkbox"
             checked={selectedRows.includes(order._id)}
@@ -261,8 +292,8 @@ duration-300"
         </td>
 
         {/* Game */}
-        <td className="px-5 py-4">
-          <div className="flex items-center gap-3">
+        <td className="w-[260px] px-5 py-4">
+  <div className="flex items-center gap-3">
             <Image
               src={gameImage}
               alt={order.game}
@@ -272,9 +303,16 @@ duration-300"
             />
 
             <div>
-              <p className="font-semibold text-white">
-                {order.game}
-              </p>
+              <p
+  className="
+    max-w-[140px]
+    truncate
+    font-semibold
+    text-white
+  "
+>
+  {normalizeGameName(order.game)}
+</p>
 
               <p className="text-sm text-slate-400">
                 ${order.price.toLocaleString()}
@@ -284,11 +322,18 @@ duration-300"
         </td>
 
         {/* Player */}
-        <td className="px-5 py-4">
+        <td className="w-[180px] px-5 py-4">
           <div>
-            <p className="font-semibold text-white">
-              {order.playerName}
-            </p>
+            <p
+  className="
+    max-w-[140px]
+    truncate
+    font-semibold
+    text-white
+  "
+>
+  {order.playerName}
+</p>
 
             <p className="text-sm text-slate-400">
               {order.phone}

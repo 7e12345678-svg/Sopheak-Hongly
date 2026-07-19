@@ -40,12 +40,17 @@ export default function Hero() {
           </p>
 
           <div className="mt-10 flex flex-wrap gap-4">
-            <Link
-              href="/topup"
-              className="rounded-xl bg-cyan-500 px-8 py-4 font-semibold text-white transition-all duration-300 hover:bg-cyan-400 hover:shadow-[0_0_30px_rgba(34,211,238,.45)]"
-            >
-              Top Up Now
-            </Link>
+            <button
+  onClick={() =>
+    document.getElementById("games")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    })
+  }
+  className="rounded-xl bg-cyan-500 px-8 py-4 font-semibold text-white transition-all duration-300 hover:bg-cyan-400 hover:shadow-[0_0_30px_rgba(34,211,238,.45)]"
+>
+  Top Up Now
+</button>
 
             <button
               onClick={() =>

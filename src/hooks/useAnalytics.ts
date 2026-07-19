@@ -77,19 +77,65 @@ export default function useAnalytics(orders: Order[]) {
   // ======================
 
   const bestSellingGame = useMemo(() => {
-    const count: Record<string, number> = {};
 
-    orders.forEach((o) => {
-      count[o.game] = (count[o.game] || 0) + 1;
-    });
+  const count: Record<string, number> = {};
 
-    return (
-      Object.entries(count).sort((a, b) => b[1] - a[1])[0] || [
-        "No Game",
-        0,
-      ]
-    );
-  }, [orders]);
+
+  orders.forEach((o) => {
+
+    const name = o.game
+      .toLowerCase()
+      .trim();
+
+
+    let gameName = "";
+
+
+    if (name.includes("pubg")) {
+      gameName = "PUBG Mobile";
+    }
+
+    else if (
+      name.includes("free") ||
+      name.includes("fire") ||
+      name === "ff"
+    ) {
+      gameName = "Free Fire";
+    }
+
+    else if (name.includes("roblox")) {
+      gameName = "Roblox";
+    }
+
+    else if (
+      name.includes("legend") ||
+      name.includes("mlbb") ||
+      name.includes("mobile legend")
+    ) {
+      gameName = "Mobile Legends";
+    }
+
+
+    if (gameName) {
+      count[gameName] =
+        (count[gameName] || 0) + 1;
+    }
+
+  });
+
+
+  return (
+    Object.entries(count)
+      .sort((a,b)=>b[1]-a[1])[0]
+    ||
+    [
+      "No Game",
+      0
+    ]
+  );
+
+
+}, [orders]);
 
   // ======================
   // Most Used Payment
@@ -98,7 +144,9 @@ export default function useAnalytics(orders: Order[]) {
   const mostUsedPayment = useMemo(() => {
     const count: Record<string, number> = {};
 
-    orders.forEach((o) => {
+    orders
+.filter((o) => o.status === "Completed")
+.forEach((o) => {
       if (!o.payment) return;
 
       count[o.payment] = (count[o.payment] || 0) + 1;

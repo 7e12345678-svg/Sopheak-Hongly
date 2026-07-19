@@ -11,6 +11,45 @@ interface Order {
   createdAt: string;
 }
 
+function getGameImage(game: string) {
+  const name = game.toLowerCase().trim();
+
+
+  // PUBG FIRST
+  if (name.includes("pubg")) {
+    return "/images/pubg.jpg";
+  }
+
+
+  // Free Fire
+  if (
+    name.includes("free") ||
+    name.includes("fire") ||
+    name === "ff"
+  ) {
+    return "/images/freefire.jpg";
+  }
+
+
+  // Roblox
+  if (name.includes("roblox")) {
+    return "/images/roblox.jpg";
+  }
+
+
+  // Mobile Legends LAST
+  if (
+    name.includes("legend") ||
+    name.includes("mlbb") ||
+    name.includes("mobile legend")
+  ) {
+    return "/images/mlbb.jpg";
+  }
+
+
+  return "/images/default-game.jpg";
+}
+
 export default function RecentActivity() {
   const [orders, setOrders] = useState<Order[]>([]);
 
@@ -67,10 +106,15 @@ export default function RecentActivity() {
           >
             <div className="flex items-center gap-4">
               <img
-                src={order.image}
-                alt={order.game}
-                className="h-14 w-14 rounded-xl object-cover"
-              />
+  src={getGameImage(order.game)}
+  alt={order.game}
+  className="
+    h-14
+    w-14
+    rounded-xl
+    object-cover
+  "
+/>
 
               <div>
                 <div className="flex items-center gap-2">

@@ -15,6 +15,45 @@ interface Order {
   createdAt: string;
 }
 
+function getGameImage(game: string) {
+  const name = game.toLowerCase().trim();
+
+
+  // PUBG
+  if (name.includes("pubg")) {
+    return "/images/pubg.jpg";
+  }
+
+
+  // Free Fire
+  if (
+    name.includes("free") ||
+    name.includes("fire") ||
+    name === "ff"
+  ) {
+    return "/images/freefire.jpg";
+  }
+
+
+  // Roblox
+  if (name.includes("roblox")) {
+    return "/images/roblox.jpg";
+  }
+
+
+  // Mobile Legends
+  if (
+    name.includes("legend") ||
+    name.includes("mlbb") ||
+    name.includes("mobile legend")
+  ) {
+    return "/images/mlbb.jpg";
+  }
+
+
+  return "/images/default-game.jpg";
+}
+
 export default function LiveOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
 
@@ -111,12 +150,12 @@ export default function LiveOrders() {
                 <div className="flex items-center gap-5">
 
                   <Image
-                    src={order.image}
-                    alt={order.game}
-                    width={70}
-                    height={70}
-                    className="rounded-2xl object-cover"
-                  />
+  src={getGameImage(order.game)}
+  alt={order.game}
+  width={70}
+  height={70}
+  className="rounded-2xl object-cover"
+/>
 
                   <div>
 

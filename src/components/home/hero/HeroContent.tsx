@@ -4,6 +4,17 @@ import { motion } from "framer-motion";
 import { ArrowRight, Gamepad2, ShieldCheck, Zap } from "lucide-react";
 
 export default function HeroContent() {
+  const scrollToGames = () => {
+    const section = document.getElementById("games");
+
+    if (section) {
+      section.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
+
   return (
     <div className="relative z-20 flex-1 max-w-2xl">
       {/* Badge */}
@@ -49,13 +60,19 @@ export default function HeroContent() {
         transition={{ delay: 0.6 }}
         className="mt-10 flex flex-wrap gap-4"
       >
-        <button className="group flex items-center gap-2 rounded-xl bg-cyan-500 px-8 py-4 font-semibold text-black transition hover:bg-cyan-400">
+        <button
+          onClick={scrollToGames}
+          className="group flex items-center gap-2 rounded-xl bg-cyan-500 px-8 py-4 font-semibold text-black transition hover:bg-cyan-400"
+        >
           Top Up Now
           <ArrowRight className="h-5 w-5 transition group-hover:translate-x-1" />
         </button>
 
-        <button className="rounded-xl border border-slate-700 bg-white/5 px-8 py-4 font-semibold text-white backdrop-blur-xl transition hover:border-cyan-400">
-          View Games
+        <button
+          onClick={scrollToGames}
+          className="rounded-xl border border-slate-700 bg-white/5 px-8 py-4 font-semibold text-white backdrop-blur-xl transition hover:border-cyan-400 hover:text-cyan-400"
+        >
+          Explore Games
         </button>
       </motion.div>
 
@@ -65,10 +82,12 @@ export default function HeroContent() {
           icon={<Gamepad2 className="h-6 w-6" />}
           title="100+ Games"
         />
+
         <Feature
           icon={<ShieldCheck className="h-6 w-6" />}
           title="Secure"
         />
+
         <Feature
           icon={<Zap className="h-6 w-6" />}
           title="Instant"
@@ -87,9 +106,7 @@ function Feature({
 }) {
   return (
     <motion.div
-      whileHover={{
-        scale: 1.05,
-      }}
+      whileHover={{ scale: 1.05 }}
       className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl"
     >
       <div className="mb-3 text-cyan-400">{icon}</div>
