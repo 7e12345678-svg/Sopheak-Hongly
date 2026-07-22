@@ -3,6 +3,7 @@ import mongoose, { Schema, model, models, Document } from "mongoose";
 export interface IOrder extends Document {
   game: string;
   gameId: string;
+  userId?: mongoose.Types.ObjectId;
   playerName: string;
   serverId: string;
   package: string;
@@ -10,7 +11,6 @@ export interface IOrder extends Document {
   payment: string;
   phone: string;
   screenshot: string;
-
   trackingCode: string;
 
   status:
@@ -23,6 +23,7 @@ export interface IOrder extends Document {
   updatedAt: Date;
 }
 
+
 const OrderSchema = new Schema<IOrder>(
   {
     game: {
@@ -33,6 +34,12 @@ const OrderSchema = new Schema<IOrder>(
     gameId: {
       type: String,
       required: true,
+    },
+
+    userId: {
+    type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
     },
 
     playerName: {

@@ -134,15 +134,6 @@ export default function HeroArtwork() {
 
       {/* Controller */}
 
-      <HeroLogo
-
-        image="/images/controller.png"
-
-        alt="Gaming Controller"
-
-      />
-
-
 
 
       {/* Cards */}

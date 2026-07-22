@@ -38,6 +38,8 @@ const games = [
 
 export default function PopularGames() {
   return (
+
+    
     <section
   id="games"
   className="relative pt-12 pb-24"
@@ -163,10 +165,14 @@ export default function PopularGames() {
                   </div>
                 </div>
               </Link>
+              
             </motion.div>
           ))}
+          
         </div>
-      </div>
+</div>
+      
+      
     </section>
   );
 }

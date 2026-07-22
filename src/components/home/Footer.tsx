@@ -7,7 +7,6 @@ import {
   FaFacebookF,
   FaTelegramPlane,
   FaDiscord,
-  FaYoutube,
   FaTiktok,
 } from "react-icons/fa";
 
@@ -16,13 +15,6 @@ const games = [
   "PUBG Mobile",
   "Free Fire",
   "Roblox",
-];
-
-const payments = [
-  { name: "ABA Bank", logo: "/payments/aba.png" },
-  { name: "Wing Bank", logo: "/payments/wing.png" },
-  { name: "ACLEDA Bank", logo: "/payments/acleda.png" },
-  { name: "AMK Bank", logo: "/payments/amk.png" },
 ];
 
 const socials = [
@@ -44,32 +36,37 @@ const socials = [
   {
     icon: <FaTiktok size={20} />,
     href: "https://www.tiktok.com/@hong_ly28?is_from_webapp=1&sender_device=pc",
-    name: "YouTube",
+    name: "TikTok",
   },
 ];
 
 export default function Footer() {
   return (
-    <footer className="relative overflow-hidden border-t border-cyan-500/10 bg-[#050816]">
+    <footer
+      id="footer"
+      className="relative overflow-hidden border-t border-cyan-500/10 bg-[#050816]"
+    >
       {/* Glow */}
       <div className="absolute inset-x-0 top-0 h-px bg-cyan-500/40" />
       <div className="absolute left-1/2 top-0 h-40 w-96 -translate-x-1/2 rounded-full bg-cyan-500/10 blur-3xl" />
 
       <div className="mx-auto max-w-7xl px-6 py-20">
+
         <div className="grid gap-12 lg:grid-cols-5">
+
           {/* Brand */}
           <div className="lg:col-span-2">
             <div className="flex items-center gap-4">
               <Image
-                src="/logo.png"
-                alt="TopUp"
+                src="/images/logo.png"
+                alt="Logo"
                 width={55}
                 height={55}
               />
 
               <div>
                 <h2 className="text-2xl font-bold text-white">
-                  TopUp Game Center
+                  Z-Store
                 </h2>
 
                 <p className="text-cyan-400">
@@ -79,8 +76,8 @@ export default function Footer() {
             </div>
 
             <p className="mt-6 max-w-md leading-7 text-slate-400">
-              Cambodia's trusted game top-up platform with instant
-              delivery, secure payment and 24/7 customer support.
+              Cambodia's trusted game top-up platform with instant delivery,
+              secure payment and 24/7 customer support.
             </p>
 
             {/* Stats */}
@@ -89,37 +86,42 @@ export default function Footer() {
                 <h3 className="text-2xl font-black text-cyan-400">
                   50K+
                 </h3>
-                <p className="text-sm text-slate-400">Customers</p>
+                <p className="text-sm text-slate-400">
+                  Customers
+                </p>
               </div>
 
               <div>
                 <h3 className="text-2xl font-black text-cyan-400">
                   200K+
                 </h3>
-                <p className="text-sm text-slate-400">Orders</p>
+                <p className="text-sm text-slate-400">
+                  Orders
+                </p>
               </div>
 
               <div>
                 <h3 className="text-2xl font-black text-cyan-400">
                   24/7
                 </h3>
-                <p className="text-sm text-slate-400">Support</p>
+                <p className="text-sm text-slate-400">
+                  Support
+                </p>
               </div>
             </div>
 
             {/* Social */}
             <div className="mt-8 flex gap-4">
               {socials.map((social) => (
-                <Link
+                <a
                   key={social.name}
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={social.name}
-                  className="rounded-2xl border border-white/10 bg-white/5 p-3 text-slate-300 transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400 hover:bg-cyan-500 hover:text-black"
+                  className="rounded-2xl border border-white/10 bg-white/5 p-3 text-slate-300 transition hover:-translate-y-1 hover:border-cyan-400 hover:bg-cyan-500 hover:text-black"
                 >
                   {social.icon}
-                </Link>
+                </a>
               ))}
             </div>
           </div>
@@ -131,25 +133,39 @@ export default function Footer() {
             </h3>
 
             <div className="mt-6 space-y-3">
-              <Link href="/" className="block text-slate-400 hover:text-cyan-400">
+
+              <Link
+                href="/#home"
+                className="block text-slate-400 hover:text-cyan-400"
+              >
                 Home
               </Link>
 
-              <Link href="/games" className="block text-slate-400 hover:text-cyan-400">
+              <Link
+                href="/#games"
+                className="block text-slate-400 hover:text-cyan-400"
+              >
                 Games
               </Link>
 
-              <Link href="/topup" className="block text-slate-400 hover:text-cyan-400">
+              <Link
+                href="/topup"
+                className="block text-slate-400 hover:text-cyan-400"
+              >
                 Top Up
               </Link>
 
-              <Link href="/dashboard" className="block text-slate-400 hover:text-cyan-400">
+              <Link
+                href="/dashboard"
+                className="block text-slate-400 hover:text-cyan-400"
+              >
                 Dashboard
               </Link>
+
             </div>
           </div>
 
-          {/* Games */}
+          {/* Popular Games */}
           <div>
             <h3 className="text-lg font-bold text-white">
               Popular Games
@@ -157,7 +173,10 @@ export default function Footer() {
 
             <div className="mt-6 space-y-3">
               {games.map((game) => (
-                <p key={game} className="text-slate-400">
+                <p
+                  key={game}
+                  className="text-slate-400"
+                >
                   {game}
                 </p>
               ))}
@@ -175,7 +194,10 @@ export default function Footer() {
             </p>
 
             <div className="mt-6 flex items-center rounded-xl border border-white/10 bg-white/5 px-4">
-              <Mail size={18} className="text-cyan-400" />
+              <Mail
+                size={18}
+                className="text-cyan-400"
+              />
 
               <input
                 type="email"
@@ -188,26 +210,41 @@ export default function Footer() {
               Subscribe
             </button>
           </div>
+
         </div>
 
         {/* Bottom */}
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-sm text-slate-500 md:flex-row">
-          <p>© 2026 TopUp Game Center. All Rights Reserved.</p>
+
+          <p>
+            © 2026 Z-Store. All Rights Reserved.
+          </p>
 
           <div className="flex gap-6">
-            <Link href="/privacy" className="hover:text-cyan-400">
+            <Link
+              href="/privacy"
+              className="hover:text-cyan-400"
+            >
               Privacy Policy
             </Link>
 
-            <Link href="/terms" className="hover:text-cyan-400">
+            <Link
+              href="/terms"
+              className="hover:text-cyan-400"
+            >
               Terms of Service
             </Link>
 
-            <Link href="/support" className="hover:text-cyan-400">
+            <Link
+              href="/support"
+              className="hover:text-cyan-400"
+            >
               Support
             </Link>
           </div>
+
         </div>
+
       </div>
     </footer>
   );

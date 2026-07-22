@@ -1,21 +1,30 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Admin from "@/models/Admin";
 import { comparePassword } from "@/lib/hash";
 import { signToken } from "@/lib/token";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
+    console.log("===== ADMIN LOGIN API CALLED =====");
+
     await connectDB();
 
     const { username, password } = await req.json();
 
-    // Find admin by username
+    if (!username || !password) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Username and password are required",
+        },
+        { status: 400 }
+      );
+    }
+
     const admin = await Admin.findOne({ username });
 
-    console.log("===== ADMIN =====");
-console.log(admin);
-
+    console.log("ADMIN:", admin?.username);
 
     if (!admin) {
       return NextResponse.json(
@@ -27,17 +36,9 @@ console.log(admin);
       );
     }
 
-    
-    
-
-    // Compare password with bcrypt hash
     const valid = await comparePassword(password, admin.password);
 
-console.log("===== VALID =====");
-console.log(valid);
-
-
-    console.log("Password Valid:", valid);
+    console.log("PASSWORD VALID:", valid);
 
     if (!valid) {
       return NextResponse.json(
@@ -49,36 +50,41 @@ console.log(valid);
       );
     }
 
-    // Create JWT
     const token = await signToken({
-  id: admin._id,
-  username: admin.username,
-  role: admin.role,
-});
+      id: admin._id.toString(),
+      username: admin.username,
+      role: admin.role,
+    });
 
-console.log("TOKEN =", token);
+    console.log("TOKEN CREATED");
 
-const response = NextResponse.json({
-  success: true,
-  user: {
-    username: admin.username,
-    role: admin.role,
-  },
-});
+    const response = NextResponse.json({
+      success: true,
+      admin: {
+        id: admin._id,
+        username: admin.username,
+        role: admin.role,
+      },
+    });
 
-response.cookies.set("admin_token", token, {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "lax",
-  path: "/",
-  maxAge: 60 * 60 * 24,
-});
+    response.cookies.set({
+      name: "admin_token",
+      value: token,
+      httpOnly: true,
+      secure: false, // localhost
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24,
+    });
 
-console.log("COOKIE CREATED");
+    console.log(
+      "SET COOKIE:",
+      response.headers.get("set-cookie")
+    );
 
-return response;
+    return response;
   } catch (error) {
-    console.error("Admin Login Error:", error);
+    console.error("ADMIN LOGIN ERROR:", error);
 
     return NextResponse.json(
       {

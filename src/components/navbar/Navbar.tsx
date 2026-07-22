@@ -2,27 +2,74 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X } from "lucide-react";
+import {
+  Menu,
+  X,
+  ChevronDown,
+  User,
+  LogOut,
+  Package,
+} from "lucide-react";
 import { useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 const menus = [
-  { name: "Home", href: "/" },
-  { name: "Games", href: "/#games" },
-  { name: "Top Up", href: "/topup" },
-  { name: "Contact", href: "/#footer" },
+  { name: "Home", id: "home" },
+  { name: "Games", id: "games" },
+  { name: "Contact", id: "footer" },
 ];
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const { user, logout } = useAuth();
+
+  function handleScroll(id: string) {
+    if (pathname !== "/") {
+      router.push(`/#${id}`);
+      return;
+    }
+
+    const element = document.getElementById(id);
+
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+      });
+    }
+  }
+
+  async function handleLogout() {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      logout();
+
+      setMenuOpen(false);
+
+      router.replace("/");
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-800/50 bg-slate-950/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3">
           <Image
             src="/images/logo.png"
-            alt="TopUp Logo"
+            alt="Logo"
             width={42}
             height={42}
             className="rounded-xl"
@@ -30,7 +77,7 @@ export default function Navbar() {
 
           <div>
             <h1 className="text-lg font-bold text-white">
-              TopUp
+              Z-Store
             </h1>
 
             <p className="text-xs text-cyan-400">
@@ -41,32 +88,99 @@ export default function Navbar() {
 
         {/* Desktop Menu */}
         <nav className="hidden items-center gap-8 md:flex">
+
           {menus.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
+            <button
+              key={item.id}
+              onClick={() => handleScroll(item.id)}
               className="font-medium text-slate-300 transition hover:text-cyan-400"
             >
               {item.name}
-            </Link>
+            </button>
           ))}
+
+          <Link
+            href="/topup"
+            className="font-medium text-slate-300 transition hover:text-cyan-400"
+          >
+            Top Up
+          </Link>
+
         </nav>
 
-        {/* Desktop Buttons */}
+        {/* Desktop Right */}
         <div className="hidden items-center gap-3 md:flex">
-          <Link
-            href="/admin/login"
-            className="rounded-xl border border-slate-700 px-5 py-2 text-slate-300 transition hover:border-cyan-400 hover:text-cyan-400"
-          >
-            Login
-          </Link>
 
-          <Link
-            href="/admin"
-            className="rounded-xl bg-cyan-500 px-5 py-2 font-semibold text-black transition hover:bg-cyan-400"
-          >
-            Dashboard
-          </Link>
+                    {!user ? (
+            <>
+              <Link
+                href="/login"
+                className="rounded-xl border border-slate-700 px-5 py-2 text-slate-300 transition hover:border-cyan-400 hover:text-cyan-400"
+              >
+                Sign In
+              </Link>
+
+              <Link
+                href="/admin"
+                className="rounded-xl bg-cyan-500 px-5 py-2 font-semibold text-black transition hover:bg-cyan-400"
+              >
+                Dashboard
+              </Link>
+            </>
+          ) : (
+            <div className="relative">
+              <button
+                onClick={() => setMenuOpen(!menuOpen)}
+                className="flex items-center gap-2 rounded-xl border border-slate-700 px-4 py-2 text-white hover:border-cyan-400"
+              >
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-cyan-500 font-bold text-black">
+                  {user.name.charAt(0)}
+                </div>
+
+                <span>{user.name}</span>
+
+                <ChevronDown size={18} />
+              </button>
+
+              {menuOpen && (
+                <div className="absolute right-0 mt-3 w-64 rounded-2xl border border-slate-700 bg-slate-900 shadow-xl">
+                  <div className="border-b border-slate-800 p-5">
+                    <h3 className="font-bold text-white">{user.name}</h3>
+
+                    <p className="text-sm text-slate-400">
+                      {user.email}
+                    </p>
+                  </div>
+
+                  <Link
+                    href="/dashboard/profile"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-3 px-5 py-3 text-slate-300 hover:bg-slate-800"
+                  >
+                    <User size={18} />
+                    Profile
+                  </Link>
+
+                  <Link
+                    href="/dashboard/orders"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-3 px-5 py-3 text-slate-300 hover:bg-slate-800"
+                  >
+                    <Package size={18} />
+                    My Orders
+                  </Link>
+
+                  <button
+                    onClick={handleLogout}
+                    className="flex w-full items-center gap-3 px-5 py-3 text-red-400 hover:bg-slate-800"
+                  >
+                    <LogOut size={18} />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -82,39 +196,79 @@ export default function Navbar() {
       {open && (
         <div className="border-t border-slate-800 bg-slate-900 md:hidden">
           {menus.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setOpen(false)}
-              className="block px-6 py-4 text-slate-300 transition hover:bg-slate-800 hover:text-cyan-400"
+            <button
+              key={item.id}
+              onClick={() => {
+                handleScroll(item.id);
+                setOpen(false);
+              }}
+              className="block w-full px-6 py-4 text-left text-slate-300 transition hover:bg-slate-800 hover:text-cyan-400"
             >
               {item.name}
-            </Link>
+            </button>
           ))}
 
+          <Link
+            href="/topup"
+            onClick={() => setOpen(false)}
+            className="block px-6 py-4 text-slate-300 transition hover:bg-slate-800 hover:text-cyan-400"
+          >
+            Top Up
+          </Link>
+
           <div className="space-y-3 border-t border-slate-800 p-6">
-            <Link
-              href="/admin/login"
-              onClick={() => setOpen(false)}
-              className="block rounded-xl border border-slate-700 px-5 py-3 text-center text-slate-300 transition hover:border-cyan-400 hover:text-cyan-400"
-            >
-              Login
-            </Link>
+            {!user ? (
+              <>
+                <Link
+                  href="/login"
+                  onClick={() => setOpen(false)}
+                  className="block rounded-xl border border-slate-700 px-5 py-3 text-center text-slate-300 transition hover:border-cyan-400 hover:text-cyan-400"
+                >
+                  Sign In
+                </Link>
+
+                <Link
+                  href="/admin"
+                  onClick={() => setOpen(false)}
+                  className="block rounded-xl bg-cyan-500 px-5 py-3 text-center font-semibold text-black transition hover:bg-cyan-400"
+                >
+                  Dashboard
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/dashboard/profile"
+                  onClick={() => setOpen(false)}
+                  className="block rounded-xl border border-slate-700 px-5 py-3 text-center text-slate-300"
+                >
+                  Profile
+                </Link>
+
+                <Link
+                  href="/dashboard/orders"
+                  onClick={() => setOpen(false)}
+                  className="block rounded-xl border border-slate-700 px-5 py-3 text-center text-slate-300"
+                >
+                  My Orders
+                </Link>
+
+                <button
+                  onClick={handleLogout}
+                  className="block w-full rounded-xl border border-red-500 px-5 py-3 text-center text-red-400"
+                >
+                  Logout
+                </button>
+              </>
+            )}
 
             <Link
-              href="/admin"
+              href="/track"
               onClick={() => setOpen(false)}
-              className="block rounded-xl bg-cyan-500 px-5 py-3 text-center font-semibold text-black transition hover:bg-cyan-400"
+              className="block rounded-xl border border-cyan-500 px-5 py-3 text-center text-cyan-400 transition hover:bg-cyan-500 hover:text-black"
             >
-              Dashboard
+              Track Order
             </Link>
-
-            <Link
-  href="/track"
-  className="rounded-xl border border-cyan-500 px-6 py-3 text-cyan-400 hover:bg-cyan-500 hover:text-black transition"
->
-  Track Order
-</Link>
           </div>
         </div>
       )}

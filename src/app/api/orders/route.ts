@@ -4,6 +4,10 @@ import Order from "@/models/Order";
 import cloudinary from "@/lib/cloudinary";
 import { requireAdmin } from "@/lib/auth";
 import { UploadApiResponse } from "cloudinary";
+import { cookies } from "next/headers";
+import { verifyToken } from "@/lib/jwt";
+import User from "@/models/User";
+
 
 // =========================
 // GET ALL ORDERS (Admin Only)
@@ -35,6 +39,8 @@ export async function GET() {
     );
   }
 }
+
+
 
 // =========================
 // CREATE ORDER
@@ -76,6 +82,24 @@ export async function POST(req: Request) {
         }
       );
     }
+
+    let userId = undefined;
+
+try {
+  const token = (await cookies()).get("token")?.value;
+
+  if (token) {
+    const payload = verifyToken(token) as { id: string };
+
+    const user = await User.findById(payload.id);
+
+    if (user) {
+      userId = user._id;
+    }
+  }
+} catch {
+  // Guest user → userId stays null
+}
 
     // =========================
     // Upload Screenshot
@@ -126,6 +150,7 @@ export async function POST(req: Request) {
     const order = await Order.create({
       game,
       gameId,
+      userId,
       playerName,
       serverId,
       package: packageName,
@@ -133,9 +158,7 @@ export async function POST(req: Request) {
       payment,
       phone,
       screenshot,
-
       trackingCode,
-
       status: "Pending",
     });
 

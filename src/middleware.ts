@@ -1,25 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
+
+const JWT_SECRET = process.env.JWT_SECRET!;
 
 export function middleware(req: NextRequest) {
-  // Cookie name must match the one set in admin-login API
-  const token = req.cookies.get("admin_token")?.value;
+  const token = req.cookies.get("token")?.value;
 
-  const { pathname } = req.nextUrl;
+  const protectedRoutes = [
+    "/dashboard",
+    "/dashboard/profile",
+    "/dashboard/orders",
+    "/dashboard/settings",
+  ];
 
-  if (
-    pathname.startsWith("/admin") &&
-    pathname !== "/admin/login"
-  ) {
-    if (!token) {
-      return NextResponse.redirect(
-        new URL("/admin/login", req.url)
-      );
-    }
+  const isProtected = protectedRoutes.some((route) =>
+    req.nextUrl.pathname.startsWith(route)
+  );
+
+  if (!isProtected) {
+    return NextResponse.next();
   }
 
-  return NextResponse.next();
+  if (!token) {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
+
+  try {
+    jwt.verify(token, JWT_SECRET);
+    return NextResponse.next();
+  } catch {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/dashboard/:path*"],
 };

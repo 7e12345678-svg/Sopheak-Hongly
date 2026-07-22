@@ -11,7 +11,7 @@ import Footer from "@/components/home/Footer";
 
 export default function Home() {
   return (
-    <main className="bg-slate-950">
+    <main id="home" className="bg-slate-950">
       <Hero />
 
       <PopularGames />
