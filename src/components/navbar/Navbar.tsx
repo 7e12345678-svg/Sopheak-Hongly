@@ -152,23 +152,27 @@ export default function Navbar() {
                     </p>
                   </div>
 
-                  <Link
-                    href="/dashboard/profile"
-                    onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-3 px-5 py-3 text-slate-300 hover:bg-slate-800"
-                  >
-                    <User size={18} />
-                    Profile
-                  </Link>
+                  <button
+  onClick={() => {
+    setMenuOpen(false);
+    router.push("/dashboard/profile");
+  }}
+  className="flex w-full items-center gap-3 px-5 py-3 text-left text-slate-300 hover:bg-slate-800"
+>
+  <User size={18} />
+  Profile
+</button>
 
-                  <Link
-                    href="/dashboard/orders"
-                    onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-3 px-5 py-3 text-slate-300 hover:bg-slate-800"
-                  >
-                    <Package size={18} />
-                    My Orders
-                  </Link>
+                  <button
+  onClick={() => {
+    setMenuOpen(false);
+    router.push("/dashboard/orders");
+  }}
+  className="flex w-full items-center gap-3 px-5 py-3 text-left text-slate-300 hover:bg-slate-800"
+>
+  <Package size={18} />
+  My Orders
+</button>
 
                   <button
                     onClick={handleLogout}
@@ -237,21 +241,27 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <Link
-                  href="/dashboard/profile"
-                  onClick={() => setOpen(false)}
-                  className="block rounded-xl border border-slate-700 px-5 py-3 text-center text-slate-300"
-                >
-                  Profile
-                </Link>
+                <button
+  onClick={() => {
+    setMenuOpen(false);
+    router.push("/dashboard/profile");
+  }}
+  className="flex w-full items-center gap-3 px-5 py-3 text-left text-slate-300 hover:bg-slate-800"
+>
+  <User size={18} />
+  Profile
+</button>
 
-                <Link
-                  href="/dashboard/orders"
-                  onClick={() => setOpen(false)}
-                  className="block rounded-xl border border-slate-700 px-5 py-3 text-center text-slate-300"
-                >
-                  My Orders
-                </Link>
+                <button
+  onClick={() => {
+    setMenuOpen(false);
+    router.push("/dashboard/orders");
+  }}
+  className="flex w-full items-center gap-3 px-5 py-3 text-left text-slate-300 hover:bg-slate-800"
+>
+  <Package size={18} />
+  My Orders
+</button>
 
                 <button
                   onClick={handleLogout}

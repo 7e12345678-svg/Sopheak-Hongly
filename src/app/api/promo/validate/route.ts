@@ -2,35 +2,34 @@ import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Promo from "@/models/Promo";
 
-export async function POST(req: Request) {
+export async function GET() {
   await connectDB();
 
-  const { code } = await req.json();
-
   const promo = await Promo.findOne({
-    code: code.toUpperCase(),
     active: true,
+  }).sort({
+    createdAt: -1,
   });
 
   if (!promo) {
     return NextResponse.json({
-      success: false,
-      message: "Invalid Promo Code",
+      success: true,
+      promo: null,
     });
   }
 
-  if (
-    promo.expiresAt &&
-    promo.expiresAt < new Date()
-  ) {
+  if (promo.expiresAt.getTime() <= Date.now()) {
+    promo.active = false;
+    await promo.save();
+
     return NextResponse.json({
-      success: false,
-      message: "Promo Expired",
+      success: true,
+      promo: null,
     });
   }
 
   return NextResponse.json({
     success: true,
-    discount: promo.discount,
+    promo,
   });
 }

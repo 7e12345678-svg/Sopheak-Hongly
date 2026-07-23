@@ -1,0 +1,5 @@
+useEffect(() => {
+  if (visible) {
+    new Audio("/sounds/notify.mp3").play();
+  }
+}, [visible]);

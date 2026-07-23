@@ -63,6 +63,10 @@ export default function TopUpContent() {
   fetchMethods();
 }, [payment, setPayment]);
 
+const getDiscountPrice = (price: number) => {
+  return (price * 0.7).toFixed(2); // 30% OFF
+};
+
   const getPackageIcon = () => {
   switch (gameData?.name?.toLowerCase()) {
     case "mobile legend":
@@ -253,9 +257,21 @@ console.log("selected =", methods.find((m) => m.name === payment));
                 {item.name}
               </h3>
 
-              <p className="mt-1 text-sm">
-                ${item.price}
-              </p>
+              <div className="mt-2 space-y-1">
+  <p className="text-sm text-slate-400 line-through">
+    ${item.price.toFixed(2)}
+  </p>
+
+  <div className="flex items-center justify-center gap-2">
+    <p className="text-xl font-bold text-cyan-400">
+      ${getDiscountPrice(item.price)}
+    </p>
+
+    <span className="rounded-full bg-red-500 px-2 py-1 text-[10px] font-bold text-white">
+      30% OFF
+    </span>
+  </div>
+</div>
             </button>
           ))
         )}

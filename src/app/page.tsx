@@ -1,35 +1,29 @@
+import NotificationProvider from "@/components/notifications";
+
 import Hero from "@/components/home/Hero";
+import FlashSale from "@/components/home/FlashSale";
 import PopularGames from "@/components/home/PopularGames";
 import WhyChooseUs from "@/components/home/WhyChooseUs";
-import PopularPackages from "@/components/home/PopularPackages";
 import LiveOrders from "@/components/home/LiveOrders";
-import PaymentMethods from "@/components/home/PaymentMethods";
+import Payment from "@/components/home/Payment";
 import Testimonials from "@/components/home/Testimonials";
 import FAQ from "@/components/home/FAQ";
 import Footer from "@/components/home/Footer";
 
-
-export default function Home() {
+export default function HomePage() {
   return (
-    <main id="home" className="bg-slate-950">
+    <div className="bg-slate-950 text-white">
+      <NotificationProvider />
+
       <Hero />
-
+      <FlashSale />
       <PopularGames />
-
       <WhyChooseUs />
-
-      <PopularPackages />
-
       <LiveOrders />
-
-      <PaymentMethods />
-
+      <Payment />
       <Testimonials />
-
       <FAQ />
-
       <Footer />
-      
-    </main>
+    </div>
   );
 }

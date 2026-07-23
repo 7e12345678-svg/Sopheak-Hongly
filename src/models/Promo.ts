@@ -1,10 +1,14 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, models, model } from "mongoose";
 
 const PromoSchema = new Schema(
   {
-    code: {
+    title: {
       type: String,
-      unique: true,
+      required: true,
+    },
+
+    description: {
+      type: String,
       required: true,
     },
 
@@ -13,17 +17,24 @@ const PromoSchema = new Schema(
       required: true,
     },
 
+    buttonText: {
+      type: String,
+      default: "Shop Now",
+    },
+
     active: {
       type: Boolean,
       default: true,
     },
 
-    expiresAt: Date,
+    expiresAt: {
+      type: Date,
+      required: true,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-export default mongoose.models.Promo ||
-  mongoose.model("Promo", PromoSchema);
+export default models.Promo || model("Promo", PromoSchema);

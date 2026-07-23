@@ -14,7 +14,7 @@ export default function CountdownTimer() {
     const now = new Date();
     const target = new Date();
 
-    target.setHours(24, 0, 0, 0);
+    target.setHours(1000, 0, 0, 0);
 
     return target.getTime();
   };

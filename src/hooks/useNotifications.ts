@@ -1,31 +1,40 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { Notification } from "@/types/notification";
+
+export type Notification = {
+  avatar: string;
+  name: string;
+  game: string;
+  item: string;
+  time: string;
+};
 
 export default function useNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   useEffect(() => {
-    const fetchNotifications = async () => {
+    async function load() {
       try {
-        const res = await fetch("/api/notifications");
+        const res = await fetch("/api/notifications", {
+          cache: "no-store",
+        });
+
+        if (!res.ok) return;
 
         const data = await res.json();
-
-        if (data.success) {
-          setNotifications(data.notifications);
-        }
+        setNotifications(data);
       } catch (err) {
-        console.error(err);
+        console.error("Failed to load notifications:", err);
       }
-    };
+    }
 
-    fetchNotifications();
+    load();
+
+    const interval = setInterval(load, 30000);
+
+    return () => clearInterval(interval);
   }, []);
 
-  return {
-    notifications,
-    unreadCount: notifications.filter((n) => !n.read).length,
-  };
+  return notifications;
 }
