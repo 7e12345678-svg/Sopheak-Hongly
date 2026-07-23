@@ -1,7 +1,13 @@
 export interface Notification {
   id: string;
-  title: string;
-  message: string;
-  read: boolean;
-  createdAt: string;
+
+  avatar: string;
+
+  name: string;
+
+  game: string;
+
+  item: string;
+
+  time: string;
 }

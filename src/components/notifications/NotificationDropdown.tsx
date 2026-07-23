@@ -31,11 +31,15 @@ export default function NotificationDropdown({
         </div>
       ) : (
         notifications.map((item) => (
-          <NotificationItem
-            key={item.id}
-            notification={item}
-          />
-        ))
+  <NotificationItem
+    key={item.id}
+    avatar={item.avatar}
+    name={item.name}
+    game={item.game}
+    item={item.item}
+    time={item.time}
+  />
+))
       )}
     </div>
   );
