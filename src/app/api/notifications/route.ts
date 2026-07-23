@@ -14,15 +14,16 @@ export async function GET() {
       .lean();
 
     const data = orders.map((order: any) => ({
-      name: order.playerName,
-      game: order.game,
-      item: order.package,
-      avatar: "/images/default-avatar.png",
-      time: new Intl.DateTimeFormat("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-      }).format(new Date(order.createdAt)),
-    }));
+  id: order._id.toString(),
+  name: order.playerName,
+  game: order.game,
+  item: order.package,
+  avatar: "/images/default-avatar.png",
+  time: new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(order.createdAt)),
+}));
 
     return NextResponse.json(data);
   } catch (error) {

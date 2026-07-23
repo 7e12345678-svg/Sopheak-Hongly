@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 export type Notification = {
+  id: string;
   avatar: string;
   name: string;
   game: string;

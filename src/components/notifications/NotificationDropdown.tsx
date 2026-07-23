@@ -1,6 +1,6 @@
 "use client";
 
-import { Notification } from "@/types/notification";
+import { Notification } from "@/hooks/useNotifications";
 import NotificationItem from "./NotificationItem";
 
 interface Props {
@@ -32,13 +32,13 @@ export default function NotificationDropdown({
       ) : (
         notifications.map((item) => (
   <NotificationItem
-    key={item.id}
-    avatar={item.avatar}
-    name={item.name}
-    game={item.game}
-    item={item.item}
-    time={item.time}
-  />
+  key={item.id}
+  avatar={item.avatar}
+  name={item.name}
+  game={item.game}
+  item={item.item}
+  time={item.time}
+/>
 ))
       )}
     </div>
